@@ -176,7 +176,7 @@ nfcnRead    Number of function calls.
 #include <stdio.h>
 #include <limits.h>
 
-typedef void (*FcnEqDiff)(unsigned n, double x, double *y, double *f);
+typedef void (*FcnEqDiff)(unsigned n, double x, double *y, double *f, double K);
 typedef void (*SolTrait)(long nr, double xold, double x, double* y, unsigned n, int* irtrn);
 
 
@@ -204,8 +204,9 @@ extern int dopri5
   long nstiff,     /* test for stiffness */
   unsigned nrdens, /* number of components for which dense outpout is required */
   unsigned* icont, /* indexes of components for which dense output is required, >= nrdens */
-  unsigned licont  /* declared length of icon */
- );
+  unsigned licont,  /* declared length of icon */
+  double K
+  );
 
 extern double contd5
  (unsigned ii,     /* index of desired component */

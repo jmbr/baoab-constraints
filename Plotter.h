@@ -13,22 +13,22 @@ class Plotter {
 
  public:
   Plotter(std::string gnuplot_exe_ = GNUPLOT_EXECUTABLE)
-      : gnuplot_exe(gnuplot_exe_), fp(nullptr) {
+      : gnuplot_exe(gnuplot_exe_), fp(0) {
     open();
   }
   
   ~Plotter() {
-    if (fp != nullptr)
+    if (fp != 0)
       std::fclose(fp);
   }
   
   int open(bool persist = false);
 
-  void send(std::string command);
+  void send(std::string command) const;
 
-  void sendline(std::string line = "");
+  void sendline(std::string line = "") const;
 
-  void flush();
+  void flush() const;
 };
 
 } // namespace simulator

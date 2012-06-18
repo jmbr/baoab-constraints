@@ -1,7 +1,7 @@
 clear all
 close all
 
-common;                                 % Load global variables.
+config;                                 % Load configuration file.
 
 % Make sure we're using the latest revision of the code.
 status = system('make');
@@ -19,9 +19,13 @@ for d = 1:num_dts
     nsteps = ceil(total_time / dt);
 
     seed = floor(rand * 1e7);
-    outfile = sprintf('result-%g-%g.dat', temperature, dt);
-    cmd = sprintf('./baoab %g %g %g %g %u > %s', ...
-                  temperature, friction, dt, nsteps, seed, outfile);
+
+    outfile = sprintf('result-%02.04g-%02.04g-%02.04g.dat', K, temperature, dt);
+    logfile = sprintf('log-%02.04g-%02.04g-%02.04g.dat', K, temperature, dt);
+    cmd = sprintf(['./simul --K %02.04g --temperature %02.04g --friction %02.04g' ...
+                   ' --dt %02.04g --steps %02.04g --seed %u --bins %u > %s 2> %s'], ...
+                  K, temperature, friction, dt, nsteps, ...
+                  seed, bins, outfile, logfile);
 
     fprintf(f, '%s\n', cmd);
 end
@@ -29,7 +33,5 @@ end
 fclose(f);
 
 tic; system(['cat ' script '  | parallel']); toc;
-
-analyze_simulations;
 
 system('xmessage -center "Simulation finished."');

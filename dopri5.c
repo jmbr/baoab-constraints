@@ -77,8 +77,9 @@ static double max_d (double a, double b)
 
 
 static double hinit (unsigned n, FcnEqDiff fcn, double x, double* y,
-	      double posneg, double* f0, double* f1, double* yy1, int iord,
-	      double hmax, double* atoler, double* rtoler, int itoler)
+                     double posneg, double* f0, double* f1, double* yy1, int iord,
+                     double hmax, double* atoler, double* rtoler, int itoler,
+                     double K)
 {
   double   dnf, dny, atoli, rtoli, sk, h, h1, der2, der12, sqr;
   unsigned i;
@@ -118,7 +119,7 @@ static double hinit (unsigned n, FcnEqDiff fcn, double x, double* y,
   /* perform an explicit Euler step */
   for (i = 0; i < n; i++)
     yy1[i] = y[i] + h * f0[i];
-  fcn (n, x+h, yy1, f1);
+  fcn (n, x+h, yy1, f1, K);
 
   /* estimate the second derivative of the solution */
   der2 = 0.0;
@@ -156,7 +157,8 @@ static int dopcor (unsigned n, FcnEqDiff fcn, double x, double* y, double xend,
 		   double hmax, double h, double* rtoler, double* atoler,
 		   int itoler, FILE* fileout, SolTrait solout, int iout,
 		   long nmax, double uround, int meth, long nstiff, double safe,
-		   double beta, double fac1, double fac2, unsigned* icont)
+		   double beta, double fac1, double fac2, unsigned* icont,
+                   double K)
 {
   double   facold, expo1, fac, facc1, facc2, fac11, posneg, xph;
   double   atoli, rtoli, hlamb, err, sk, hnew, yd0, ydiff, bspl;
@@ -202,11 +204,11 @@ static int dopcor (unsigned n, FcnEqDiff fcn, double x, double* y, double xend,
   last  = 0;
   hlamb = 0.0;
   iasti = 0;
-  fcn (n, x, y, k1);
+  fcn (n, x, y, k1, K);
   hmax = fabs (hmax);
   iord = 5;
   if (h == 0.0)
-    h = hinit (n, fcn, x, y, posneg, k1, k2, k3, iord, hmax, atoler, rtoler, itoler);
+          h = hinit (n, fcn, x, y, posneg, k1, k2, k3, iord, hmax, atoler, rtoler, itoler, K);
   nfcn += 2;
   reject = 0;
   xold = x;
@@ -256,23 +258,23 @@ static int dopcor (unsigned n, FcnEqDiff fcn, double x, double* y, double xend,
     /* the first 6 stages */
     for (i = 0; i < n; i++)
       yy1[i] = y[i] + h * a21 * k1[i];
-    fcn (n, x+c2*h, yy1, k2);
+    fcn (n, x+c2*h, yy1, k2, K);
     for (i = 0; i < n; i++)
       yy1[i] = y[i] + h * (a31*k1[i] + a32*k2[i]);
-    fcn (n, x+c3*h, yy1, k3);
+    fcn (n, x+c3*h, yy1, k3, K);
     for (i = 0; i < n; i++)
       yy1[i] = y[i] + h * (a41*k1[i] + a42*k2[i] + a43*k3[i]);
-    fcn (n, x+c4*h, yy1, k4);
+    fcn (n, x+c4*h, yy1, k4, K);
     for (i = 0; i <n; i++)
       yy1[i] = y[i] + h * (a51*k1[i] + a52*k2[i] + a53*k3[i] + a54*k4[i]);
-    fcn (n, x+c5*h, yy1, k5);
+    fcn (n, x+c5*h, yy1, k5, K);
     for (i = 0; i < n; i++)
       ysti[i] = y[i] + h * (a61*k1[i] + a62*k2[i] + a63*k3[i] + a64*k4[i] + a65*k5[i]);
     xph = x + h;
-    fcn (n, xph, ysti, k6);
+    fcn (n, xph, ysti, k6, K);
     for (i = 0; i < n; i++)
       yy1[i] = y[i] + h * (a71*k1[i] + a73*k3[i] + a74*k4[i] + a75*k5[i] + a76*k6[i]);
-    fcn (n, xph, yy1, k2);
+    fcn (n, xph, yy1, k2, K);
     if (iout == 2)
       if (nrds == n)
 	for (i = 0; i < n; i++)
@@ -437,7 +439,8 @@ int dopri5
  (unsigned n, FcnEqDiff fcn, double x, double* y, double xend, double* rtoler,
   double* atoler, int itoler, SolTrait solout, int iout, FILE* fileout, double uround,
   double safe, double fac1, double fac2, double beta, double hmax, double h,
-  long nmax, int meth, long nstiff, unsigned nrdens, unsigned* icont, unsigned licont)
+  long nmax, int meth, long nstiff, unsigned nrdens, unsigned* icont, unsigned licont,
+  double K)
 {
   int       arret, idid;
   unsigned  i;
@@ -635,7 +638,7 @@ int dopri5
   else
   {
     idid = dopcor (n, fcn, x, y, xend, hmax, h, rtoler, atoler, itoler, fileout,
-		   solout, iout, nmax, uround, meth, nstiff, safe, beta, fac1, fac2, icont);
+		   solout, iout, nmax, uround, meth, nstiff, safe, beta, fac1, fac2, icont, K);
     free (ysti);
     free (k6);
     free (k5);    /* reverse order freeing too increase chances */

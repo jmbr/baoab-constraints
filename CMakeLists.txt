@@ -2,37 +2,57 @@ cmake_minimum_required(VERSION 2.8)
 project(baoab-constrained CXX)
 enable_language(CXX C)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 set(Boost_USE_STATIC_LIBS    ON)
 set(Boost_USE_MULTITHREADED  OFF)
 set(Boost_USE_STATIC_RUNTIME ON)
-find_package(Boost)
-# find_package(Threads)
-# find_package(OpenMP)
+find_package(Boost REQUIRED program_options)
+
+find_package(GSL REQUIRED)
+include_directories(${GSL_INCLUDE_DIRS})
+
 find_package(Gnuplot)
-find_package(Armadillo)
-
-include_directories(${ARMADILLO_INCLUDE_DIRS})
-
 add_definitions(-DGNUPLOT_EXECUTABLE="${GNUPLOT_EXECUTABLE}")
+
+find_package(OpenMP)
+
+find_package(Threads)
+find_package(GTest)
+
+# find_package(Armadillo)
+# if (ARMADILLO_FOUND)
+#   include_directories(${ARMADILLO_INCLUDE_DIRS})
+# endif()
+  
+add_definitions(-DHAVE_SSE)
 
 set(CXX_WARN_FLAGS "-W -Wall -Wextra -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -march=native -mtune=native -msse4.2 -mssse3")
-set(CMAKE_CXX_FLAGS "-ggdb3 -std=c++0x ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -msse4.2 -mssse3")
+set(CMAKE_CXX_FLAGS "-ggdb3 -std=c++11 ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-set(LINK_SEARCH_END_STATIC "ON")
+# set(LINK_SEARCH_END_STATIC "ON")
 
-add_executable(baoab baoab.cpp Plotter.cpp dop853.c)
-target_link_libraries(baoab ${Boost_LIBRARIES})
+add_library(baoab
+  BAOAB.h BAOAB.cpp
+  BAOAB_with_Rotation.cpp
+  BAOAB_with_RATTLE.cpp
+  BAOAB_with_DoPri.cpp
+  Plotter.h Plotter.cpp
+  Histogram.h Histogram.cpp
+  linspace.h double2.h
+  dop853.h dop853.c
+  dopri5.h dopri5.c
+  Experiment.h Experiment.cpp)
 
-# add_executable(baoab-backup baoab-backup.cpp Plotter.cpp)
-# target_link_libraries(baoab-backup ${Boost_LIBRARIES})
+add_executable(simul simul.cpp Options.cpp)
+target_link_libraries(simul baoab ${Boost_LIBRARIES} ${GSL_LIBRARIES})
 
-# add_executable(rattle rattle.cpp Plotter.cpp)
-# target_link_libraries(rattle ${Boost_LIBRARIES})
-
-# add_executable(ode-test ode-test.cpp dop853.c)
-# target_link_libraries(ode-test ${Boost_LIBRARIES})
-
-# add_executable(O O.cpp)
-# target_link_libraries(O ${Boost_LIBRARIES} ${ARMADILLO_LIBRARIES})
+# enable_testing()
+# include_directories(${GTEST_INCLUDES})
+# add_executable(test-suite test-suite.cpp)
+# target_link_libraries(test-suite simul
+#   ${Boost_LIBRARIES} ${GSL_LIBRARIES}
+#   ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+# add_test(test-suite test-suite)

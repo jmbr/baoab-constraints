@@ -1,12 +1,13 @@
-clear all
-close all
+function f = analyze_simulations(K, first, last)
 
-common;                                 % Load global variables.
+config;                                 % Load configuration file.
+
+dts
 
 for d = 1:num_dts
     dt = dts(d);
     nsteps = ceil(total_time / dt);
-    outfile = sprintf('result-%g-%g.dat', temperature, dt);
+    outfile = sprintf('result-%02.04g-%02.04g-%02.04g.dat', K, temperature, dt);
     value = load(outfile);
     results(d) = value(end);
 end
@@ -14,18 +15,18 @@ end
 x = log10(dts);
 y = log10(results);
 
-%n = num_dts-1;
-n = 6;
-xx = x(end-n:end);
-yy = y(end-n:end);
+xx = x(first:last);
+yy = y(first:last);
 
 p = polyfit(xx, yy, 1);
-slope = p(1);
+slope = p(1)
 
+f = figure;
 plot(x, y, 'ko', ...
      xx, polyval(p, xx), 'k--');
-legend('Observations', 'Least-squares line', 'Location', 'SouthEast');
+legend('Observations', 'Least-squares line', 'Location', 'SouthEastOutside');
 xlabel('Time step length (Log. base 10)');
 ylabel('Error (Log. base 10)');
 title(['Slope: ', num2str(slope)]);
+%axis tight;
 %axis([-1.05 -1 -4.8 -4.4]);

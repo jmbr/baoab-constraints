@@ -7,23 +7,23 @@ int Plotter::open(bool persist) {
   if (persist)
     command += " -persist";
   fp = popen(command.c_str(), "w");
-  return (fp != nullptr) ? 0 : -1;     // XXX Replace this by an exception.
+  return (fp != 0) ? 0 : -1;     // XXX Replace this by an exception.
 }
 
-void Plotter::send(std::string command) {
+void Plotter::send(std::string command) const {
   // std::cout << command;
-  // if (fp != nullptr)
+  // if (fp != 0)
   std::fprintf(fp, "%s", command.c_str());
   std::fflush(fp);
 }
 
-void Plotter::sendline(std::string line) {
+void Plotter::sendline(std::string line) const {
   send(line);
   send("\n");
 }
 
-void Plotter::flush() {
-  // if (fp != nullptr)
+void Plotter::flush() const {
+  // if (fp != 0)
   std::fflush(fp);
 }
 

@@ -6,14 +6,20 @@
 #include <ostream>
 #include <initializer_list>
 
+#ifdef HAVE_SSE
 typedef double v2df __attribute__ ((vector_size (2 * sizeof(double))));
+#else
+# warning "SIMD (SSE) operations disabled."
+#endif
 
 // TODO Take advantage of C++11's move semantics to reduce the need
 // for temporaries.
 
 struct double2 {
   union {
+#ifdef HAVE_SSE
     v2df data;
+#endif
     double array[2];
     struct { double x, y; };
   };
@@ -35,34 +41,64 @@ struct double2 {
   }
 
   inline double2& operator+=(const double2& d) {
+#ifdef HAVE_SSE
     this->data += d.data;
+#else
+    x += d.x;
+    y += d.y;
+#endif
     return *this;
   }
 
   inline double2& operator-=(const double2& d) {
+#ifdef HAVE_SSE
     this->data -= d.data;
+#else
+    x -= d.x;
+    y -= d.y;
+#endif
     return *this;
   }
 
   inline double2& operator*=(const double2& d) {
+#ifdef HAVE_SSE
     this->data *= d.data;
+#else
+    x *= d.x;
+    y *= d.y;
+#endif
     return *this;
   }
 
   inline double2& operator/=(const double2& d) {
+#ifdef HAVE_SSE
     this->data /= d.data;
+#else
+    x /= d.x;
+    y /= d.y;
+#endif
     return *this;
   }
 
   inline double2& operator*=(const double s) {
+#ifdef HAVE_SSE
     this->x *= s;
     this->y *= s;
+#else
+    x *= s;
+    y *= s;
+#endif
     return *this;
   }
 
   inline double2& operator/=(const double s) {
+#ifdef HAVE_SSE    
     this->x /= s;
     this->y /= s;
+#else
+    x /= s;
+    y /= s;
+#endif
     return *this;
   }
 
