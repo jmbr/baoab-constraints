@@ -56,16 +56,15 @@ void Experiment::simulate() {
   for (size_t step = 1; step < total_steps; step++) {
     compute_step();
 
-    if (step % static_cast<size_t>(1e5) == 0) {
+    if (step % static_cast<size_t>(1e6) == 0) {
       if (plot)
         histogram.plot();
 
       const double t = static_cast<double>(step) * dt;
 
-      if (step % static_cast<size_t>(1e6) == 0) {
-        log << t << " " << baoab.q << " " << baoab.p << "\n\n"
-            << histogram << std::endl;
-      }
+      log << t << " " << baoab.q << " " << baoab.p
+          << "\n\n"
+          << histogram << std::endl;
       
       results << t << " " << histogram.error() << std::endl;
     }
