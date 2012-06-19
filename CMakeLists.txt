@@ -8,6 +8,7 @@ set(Boost_USE_STATIC_LIBS    ON)
 set(Boost_USE_MULTITHREADED  OFF)
 set(Boost_USE_STATIC_RUNTIME ON)
 find_package(Boost REQUIRED program_options)
+include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(GSL REQUIRED)
 include_directories(${GSL_INCLUDE_DIRS})
