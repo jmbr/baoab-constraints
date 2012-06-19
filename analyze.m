@@ -1,39 +1,77 @@
-function slope = analyze(directory)
+clear all
+close all
 
-if nargin == 0
-    directory = pwd;
-end
+% function slope = analyze(directory)
+
+% if nargin == 0
+directory = pwd;
+% end
 
 files = dir(fullfile(directory, 'result-*.dat'));
-num_files = length(files);
+num_dts = length(files);
 
-time_step_sizes = zeros(num_files, 1);
-results = zeros(num_files, 2);
+dts = zeros(num_dts, 1);
+results = {};
 
-for k = 1:num_files
+total_time = +Inf;
+
+for k = 1:num_dts
     name = files(k).name;
-    out = textscan(name, 'result-dt-%f.dat');
-    time_step_sizes(k) = out{1};
+    out = textscan(name, 'result-0.5-0.1-%f.dat');
+    % out = textscan(name, 'result-dt-%f.dat');
+    dts(k) = out{1};
 
-    data = load(name);
+    results{k} = load(name);
 
-    results(k, :) = data(end, :);
+    r = results{k};
+    total_time = min(total_time, r(end, 1));
 end
 
-[time_step_sizes indices] = sort(time_step_sizes);
-results = results(indices, :);
+N = 1000;
+errors = {};
+ts = linspace(0, total_time, N);
+for k = 1:num_dts
+    r = results{k};
+    errors{k} = interp1(r(:, 1), r(:, 2), ts);
+end
 
-x = log10(time_step_sizes);
-y = log10(results(:, 2));
+slopes = zeros(N, 1);
+residuals = zeros(N, 1);
+for n = 1:N
+    t = ts(n);
 
-p = polyfit(x, y, 1);
-slope = p(1);
+    x = zeros(1, num_dts);
+    y = zeros(1, num_dts);
+    for k = 1:num_dts
+        x(k) = log10(dts(k));
+        err = errors{k};
+        y(k) = log10(err(n));
+    end
 
-plot(x, y, 'bx-', ...
+    p = polyfit(x, y, 1);
+    slopes(n) = p(1);
+    residuals(n) = mean(abs(err(n) - p));
+
+    if mod(n, 500) == 0
+        disp(['Progress: ' num2str(round(t/total_time*100))]);
+    end
+end
+
+subplot(3, 1, 1);
+plot(ts(1:n), slopes(1:n), '-');
+%  axis([0 total_time]);
+%set(gca, 'YTick', -6:1:6);
+grid on;
+xlabel('Time');
+ylabel('Slope of least-squares line');
+
+subplot(3, 1, 2);
+plot(x, y, 'bo', ...
      x, polyval(p, x), 'k--');
+% axis([log10(dts(1)) log10(dts(end)) -5 -2]);
 legend('Observations', ...
-       sprintf('Least-squares line (slope %f)', slope), ...
-       'Location', 'SouthEastOutside');
+       sprintf('Least-squares line\n(Slope %f)', slopes(n)), ...
+       'Location', 'NorthWest');
 xlabel('Time step length (Log. base 10)');
 ylabel('Error (Log. base 10)');
-axis tight;
+drawnow;
