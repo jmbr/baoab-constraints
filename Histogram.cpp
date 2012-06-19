@@ -24,8 +24,9 @@ static double f(double theta, void* params) {
   sincos(theta, &s, &c);
   const double D = sqrt(K) * c * c + s * s / sqrt(K);
 
-  const double U = c * c * s * s / K;
-  // const double U = s;
+  // const double U = c * c * s / K;
+  // const double U = c * c * s * s / K;
+  const double U = s;
   
   return sqrt(D) * exp(-U / temperature);
 }

@@ -35,8 +35,8 @@ BAOAB::BAOAB(double K_,
 void BAOAB::computeForce() {
   // If you change sth here, remember to change the histogram routine.
   // f.x = -q.y * 2.0 * q.x; f.y = -q.x * q.x;
-  f.x = -2.0 * q.x * q.y * q.y; f.y = -2.0 * q.x * q.x * q.y;
-  // f.x =  0.0; f.y = -1.0;
+  // f.x = -2.0 * q.x * q.y * q.y; f.y = -2.0 * q.x * q.x * q.y;
+  f.x =  0.0; f.y = -1.0;
 }
   
 void BAOAB::operator()() {
