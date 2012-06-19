@@ -15,13 +15,13 @@ struct Options {
   bool plot;
 
   Options()
-      : K(0.5),
-        temperature(0.1),
+      : K(-1),
+        temperature(-1),
         friction(1e4),
-        min_dt(0.35),
-        max_dt(0.43),
-        num_experiments(21),
-        total_time(1e10),
+        min_dt(-1),
+        max_dt(-1),
+        num_experiments(0),
+        total_time(-1),
         random_seed(0),
         nbins(50),
         plot(false) {}
