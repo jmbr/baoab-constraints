@@ -17,20 +17,24 @@ Experiment::Experiment(double K, double friction, double temperature,
   total_steps = static_cast<unsigned long long>(std::ceil(total_time / dt));
 
   std::ostringstream log_name;
-  log_name << std::setprecision(5) << "log-dt-" << dt << ".dat";
+  log_name << "log-dt-" << dt << ".dat";
   log.open(log_name.str());
   if (!log.is_open()) {
     std::cerr << "Unable to open log file for dt = " << dt << std::endl;
     abort();                            // XXX Exception.
   }
 
+  log << std::setprecision(14);
+
   std::ostringstream results_name;
-  results_name << std::setprecision(5) << "result-dt-" << dt << ".dat";
+  results_name << "result-dt-" << dt << ".dat";
   results.open(results_name.str());
   if (!results.is_open()) {
     std::cerr << "Unable to open results file for dt = " << dt << std::endl;
     abort();                            // XXX Exception.
   }
+
+  results << std::setprecision(14);
   
   log << "K = " << K << ", "
       << "temperature = " << temperature << ", "
@@ -53,10 +57,10 @@ void Experiment::compute_step() {
 }
 
 void Experiment::simulate() {
-  for (size_t step = 1; step < total_steps; step++) {
+  for (size_t step = 1; step <= total_steps; step++) {
     compute_step();
 
-    if (step % static_cast<size_t>(1e6) == 0) {
+    if (step % static_cast<size_t>(1e6) == 0 || step == total_steps) {
       if (plot)
         histogram.plot();
 
@@ -69,11 +73,4 @@ void Experiment::simulate() {
       results << t << " " << histogram.error() << std::endl;
     }
   }
-
-  const double t = static_cast<double>(total_steps) * dt;
-  
-  results << t << " " << histogram.error() << std::endl;
-
-  log << t << " " << baoab.q << " " << baoab.p << std::endl
-      << histogram << std::endl;
 }
