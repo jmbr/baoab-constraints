@@ -102,17 +102,25 @@ struct double2 {
     return *this;
   }
 
-  inline double norm() const {
-    return sqrt(x*x + y*y);             // XXX Use SSE
+  inline double norm2() const {
+    // XXX Replace this by calls to __builtin_ia32_dppd
+    return x*x + y*y;
   }
 
-  inline double norm2() const {
-    return x*x + y*y;             // XXX Use SSE
+  inline double norm() const {
+    // XXX Provide an optional variant using rsqrt on platforms that
+    // allow it.
+    return sqrt(norm2());
   }
 
   inline void rotate(double theta) {
     double s, c;
+#ifdef _GNU_SOURCE
     sincos(theta, &s, &c);
+#else
+    s = sin(theta);
+    c = cos(theta);
+#endif
     const double rx = c * x - s * y;
     const double ry = s * x + c * y;
     x = rx;
@@ -170,7 +178,7 @@ inline double2 operator/(const double2& v, const double s) {
 }
 
 inline double dot(const double2& u, const double2& v) {
-  double2 d = u * v;
+  const double2 d = u * v;
   // XXX Replace this by calls to __builtin_ia32_dppd
   return d.x + d.y;
 }
@@ -179,7 +187,5 @@ inline double dist(const double2& u, const double2& v) {
   const double2 r = u - v;
   return r.norm();
 }
-
-// XXX rsqrt
 
 #endif
