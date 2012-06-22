@@ -30,10 +30,11 @@ add_definitions(-DHAVE_SSE)
 
 set(CXX_WARN_FLAGS "-W -Wall -Wextra -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -msse4.2 -mssse3")
-set(CMAKE_CXX_FLAGS "-ggdb3 -std=c++11 ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -msse4.2 -mssse3")
+# set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native")
+set(CMAKE_CXX_FLAGS "-ggdb3 -std=c++0x ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-# set(LINK_SEARCH_END_STATIC "ON")
+set(LINK_SEARCH_END_STATIC "ON")
 
 add_library(baoab
   BAOAB.h BAOAB.cpp
