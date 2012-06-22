@@ -28,7 +28,7 @@ BAOAB::BAOAB(double K_,
 
   assert(fabs(g(q)) < tol);
   assert(fabs(dot(G(q), p)) < tol);
-    
+
   computeForce();
 }
 
@@ -38,7 +38,7 @@ void BAOAB::computeForce() {
   // f.x = -2.0 * q.x * q.y * q.y; f.y = -2.0 * q.x * q.x * q.y;
   f.x =  0.0; f.y = -1.0;
 }
-  
+
 void BAOAB::operator()() {
   B();
   A();
@@ -59,7 +59,7 @@ double BAOAB::g(const double2& r) {
 double2 BAOAB::G(const double2& r) {
   return double2(2.0 * K * r.x, 2.0 * r.y);
 }
-  
+
 void BAOAB::B() {
   const double2 Gq = G(q);
   const double Gq_times_Gq_trans = dot(Gq, Gq);
@@ -80,7 +80,7 @@ void BAOAB::O() {
 
   const double2 S(normal(rng), normal(rng));
   const double2 R(dot(Mrow1, S), dot(Mrow2, S));
-  
+
   p = c1 * p + c3 * R;
 
   assert(fabs(g(q)) < tol && fabs(dot(G(q), p)) < tol);

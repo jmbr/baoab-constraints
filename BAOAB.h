@@ -35,7 +35,7 @@ class BAOAB {
   boost::random::normal_distribution<double> normal;
 
   simulator::Plotter plotter;
-  
+
  public:
   double2 q;
   double2 p;
@@ -46,16 +46,16 @@ class BAOAB {
   double angle() const;
 
   void computeForce();
-  
+
   void operator()();
 
   void plot() const;
-  
+
  protected:
   double g(const double2& r);
 
   double2 G(const double2& r);
-  
+
   virtual void A() = 0;
   void B();
   void O();
@@ -66,7 +66,7 @@ class BAOAB_with_RATTLE : public virtual BAOAB {
   BAOAB_with_RATTLE(double K_, double friction_, double temperature_,
                     double dt_, unsigned seed)
       : BAOAB(K_, friction_, temperature_, dt_, seed) {}
-  
+
  protected:
   void A();
 
