@@ -22,8 +22,8 @@ int main(int argc, char* argv[]) {
   // Set up experiments.
   ///////////////////////////////////////////////////////////////////////////
   boost::mt19937 rng(o.random_seed);
-  const unsigned s = numeric_limits<unsigned>::max();
-  boost::random::uniform_int_distribution<unsigned> seeds(0, s);
+  const unsigned max_seed = numeric_limits<unsigned>::max();
+  boost::random::uniform_int_distribution<unsigned> seeds(0, max_seed);
   
   vector<unique_ptr<Experiment> > experiments(o.num_experiments);
   vector<double> dts = linspace<double>(o.min_dt, o.max_dt, o.num_experiments);
