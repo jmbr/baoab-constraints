@@ -35,7 +35,7 @@ Experiment::Experiment(double K, double friction, double temperature,
   }
 
   results << std::setprecision(14);
-  
+
   log << "K = " << K << ", "
       << "temperature = " << temperature << ", "
       << "friction = " << friction << ", "
@@ -71,7 +71,7 @@ void Experiment::simulate() {
       log << t << " " << baoab.q << " " << baoab.p
           << "\n\n"
           << histogram << std::endl;
-      
+
       results << t << " " << histogram.error() << std::endl;
     }
   }
