@@ -18,13 +18,8 @@ add_definitions(-DGNUPLOT_EXECUTABLE="${GNUPLOT_EXECUTABLE}")
 
 find_package(OpenMP)
 
-find_package(Threads)
-find_package(GTest)
-
-# find_package(Armadillo)
-# if (ARMADILLO_FOUND)
-#   include_directories(${ARMADILLO_INCLUDE_DIRS})
-# endif()
+#find_package(Threads)
+#find_package(GTest)
   
 add_definitions(-DHAVE_SSE)
 
