@@ -34,9 +34,16 @@ BAOAB::BAOAB(double K_,
 
 void BAOAB::computeForce() {
   // If you change sth here, remember to change the histogram routine.
+
+  const double d = 1.0, a = 2.0, r0 = 1.0, r = q.norm();
+  const double w = exp(-a * (r - r0));
+  const double morse_factor = -2.0 * a * d * (w - w * w) / r;
+  f.x = morse_factor * q.x;
+  f.y = morse_factor * q.y;
+
   // f.x = -q.y * 2.0 * q.x; f.y = -q.x * q.x;
   // f.x = -2.0 * q.x * q.y * q.y; f.y = -2.0 * q.x * q.x * q.y;
-  f.x =  0.0; f.y = -1.0;
+  // f.x =  0.0; f.y = -1.0;
 }
 
 void BAOAB::operator()() {
