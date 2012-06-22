@@ -101,7 +101,6 @@ void BAOAB::plot() const {
       << "set yrange [-2:2]\n"
       << "plot '-' with points pointtype 7 pointsize 3,"
       << " '-' with vectors filled head linetype 0\n"
-      << q << " " << p << "\ne\n"
       << q << "\ne\n"
       << q << " " << (p / p.norm()) << "\ne\n";
   plotter.send(cmd.str());

@@ -61,8 +61,10 @@ void Experiment::simulate() {
     compute_step();
 
     if (step % static_cast<size_t>(1e6) == 0 || step == total_steps) {
-      if (plot)
+      if (plot) {
         histogram.plot();
+        // baoab.plot();
+      }
 
       const double t = static_cast<double>(step) * dt;
 
