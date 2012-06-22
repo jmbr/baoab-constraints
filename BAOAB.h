@@ -12,7 +12,6 @@
 using namespace std;
 
 const double tol = 1e-14;
-// const double tol = 1e-12;
 
 class BAOAB_did_not_converge : public std::exception {
  public:
@@ -71,7 +70,7 @@ class BAOAB_with_RATTLE : public virtual BAOAB {
   void A();
 
  private:
-  void rattle(double h, const size_t max_iters = 1e8);
+  void rattle(double h, const size_t max_iters = 1e7);
 };
 
 class BAOAB_with_DoPri : public virtual BAOAB {
