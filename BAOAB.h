@@ -85,7 +85,12 @@ class BAOAB_with_DoPri : public virtual BAOAB {
 
 class BAOAB_with_Rotation : public virtual BAOAB {
  public:
-  BAOAB_with_Rotation(double K_, double friction_, double temperature_,
+  BAOAB_with_Rotation(double K_
+#ifdef NDEBUG
+                      __attribute__((unused))
+#endif
+                      ,
+                      double friction_, double temperature_,
                       double dt_, unsigned seed)
       : BAOAB(1.0, friction_, temperature_, dt_, seed) {
     assert(fabs(K_ - 1.0) < 1e-32);
