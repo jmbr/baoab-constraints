@@ -8,7 +8,7 @@ void BAOAB_with_RATTLE::A() {
   rattle(beta * h);
   rattle(alpha * h);
 }
-  
+
 /*
 void BAOAB_with_RATTLE::A() {
   const double h = dt / 2.0;
@@ -22,7 +22,7 @@ void BAOAB_with_RATTLE::A() {
 void BAOAB_with_RATTLE::rattle(double h, const size_t max_iters) {
   // Declare auxiliary constants.
   const double2 Gqprev = G(q);
-    
+
   // Deal with constraint on the configuration manifold.
   q += h * p;
   double lambda_r = 0.0;
@@ -35,10 +35,10 @@ void BAOAB_with_RATTLE::rattle(double h, const size_t max_iters) {
     const double phi = g(r);
     const double dphi_dl = -dot(G(r), Gqprev);
     const double update = phi / dphi_dl;
-      
+
     if (fabs(phi) < tol && fabs(update) < tol)
       break;
-      
+
     lambda_r -= update;
   }
 

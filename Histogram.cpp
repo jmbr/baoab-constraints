@@ -39,17 +39,17 @@ static double f(double theta, void* params) {
   // const double U = c * c * s / K;
   // const double U = c * c * s * s / K;
   // const double U = s;
-  
+
   return sqrt(D) * exp(-U / temperature);
 }
-  
+
 void Histogram::compute() {
   gsl_integration_workspace* w;
 
   w = gsl_integration_workspace_alloc(10000);
 
   double params[] = { temperature, K };
-  
+
   gsl_function F;
   F.function = &f;
   F.params = &params[0];
@@ -69,7 +69,7 @@ void Histogram::compute() {
 
     reference[n] /= partition_function;
   }
-  
+
   minimum = *std::min_element(reference.begin(), reference.end());
   maximum = *std::max_element(reference.begin(), reference.end());
 
@@ -114,7 +114,7 @@ double Histogram::error() const {
     err = std::max(err, fabs(freq - reference[k]));
   }
   return err;
-  
+
 #if 0
   double err = 0.0;
   for (unsigned k = 0; k < nbins; k++)
@@ -140,7 +140,7 @@ static inline double angle(unsigned k, unsigned nbins) {
 void Histogram::plot(Plotter& plotter) {
   const double tot = static_cast<double>(total());
   const double order_error = log10(error());
-  
+
   std::ostringstream cmd;
   cmd << "set title 'O(Error) = " << order_error << "'\n"
       << "set xrange [-pi:pi]\n"

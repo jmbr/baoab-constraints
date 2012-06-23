@@ -31,11 +31,11 @@ struct double2 {
   double2(std::initializer_list<double> list) {
     std::copy(list.begin(), list.end(), array);
   }
-  
+
   inline double& operator[](size_t i) {
     return array[i];
   }
-  
+
   inline const double& operator[](size_t i) const {
     return array[i];
   }
@@ -92,7 +92,7 @@ struct double2 {
   }
 
   inline double2& operator/=(const double s) {
-#ifdef HAVE_SSE    
+#ifdef HAVE_SSE
     this->x /= s;
     this->y /= s;
 #else
@@ -126,7 +126,7 @@ struct double2 {
     x = rx;
     y = ry;
   }
-  
+
   friend std::ostream& operator<<(std::ostream& stream, const double2& d) {
     return stream << d.x << " " << d.y;
   }
