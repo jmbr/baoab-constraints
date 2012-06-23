@@ -16,7 +16,7 @@ int Options::parse(int argc, char* argv[]) {
       ("dt", po::value<double>(), "Time step length")
       ("min-dt", po::value<double>(), "Minimum time step length")
       ("max-dt", po::value<double>(), "Minimum time step length")
-      ("number", po::value<size_t>(), "Number of experiments")
+      ("number", po::value<unsigned>(), "Number of experiments")
       ("time", po::value<double>(), "Instant when the simulation stops")
       ("seed", po::value<unsigned>(), "Seed for the random number generator")
       ("bins", po::value<unsigned>(), "Number of bins in histogram")
@@ -53,7 +53,7 @@ int Options::parse(int argc, char* argv[]) {
       max_dt = varmap["max-dt"].as<double>();
 
     if (varmap.count("number"))
-      num_experiments = varmap["number"].as<size_t>();
+      num_experiments = varmap["number"].as<unsigned>();
   }
 
   if (varmap.count("time"))

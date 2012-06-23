@@ -7,20 +7,44 @@
 
 #include "Experiment.h"
 
+
+Experiment::Experiment()
+    : total_steps(0), plot(false) {}
+
 Experiment::Experiment(double K, double friction, double temperature,
                        double dt_, double total_time,
-                       unsigned random_seed, size_t nbins, bool plot_)
+                       unsigned random_seed, unsigned nbins, bool plot_)
     : baoab(K, friction, temperature, dt_, random_seed),
       histogram(nbins, temperature, K),
-      dt(dt_),
-      plot(plot_) {
-  total_steps = static_cast<unsigned long long>(std::ceil(total_time / dt));
+      total_steps(static_cast<unsigned long long>(ceil(total_time / dt_))),
+      plot(plot_),
+      files_are_open(false) {}
+
+Experiment::~Experiment() {
+  if (files_are_open)
+    closeFiles();
+}
+
+Experiment& Experiment::operator=(const Experiment& other) {
+  if (this != &other) {
+    baoab = other.baoab;
+    histogram = other.histogram;
+    total_steps = other.total_steps;
+    plot = other.plot;
+  }
+
+  return *this;
+}
+
+void Experiment::openFiles() {
+  const double dt = baoab.dt;
 
   std::ostringstream log_name;
   log_name << "log-dt-" << dt << ".dat";
   log.open(log_name.str());
   if (!log.is_open()) {
-    std::cerr << "Unable to open log file for dt = " << dt << std::endl;
+    std::cerr << "Unable to open log file for dt = " << dt
+              << std::endl;
     abort();                            // XXX Exception.
   }
 
@@ -30,25 +54,35 @@ Experiment::Experiment(double K, double friction, double temperature,
   results_name << "result-dt-" << dt << ".dat";
   results.open(results_name.str());
   if (!results.is_open()) {
-    std::cerr << "Unable to open results file for dt = " << dt << std::endl;
+    std::cerr << "Unable to open results file for dt = "
+              << dt << std::endl;
     abort();                            // XXX Exception.
   }
 
   results << std::setprecision(14);
 
-  log << "K = " << K << ", "
-      << "temperature = " << temperature << ", "
-      << "friction = " << friction << ", "
+  log << "K = " << baoab.K << ", "
+      << "temperature = " << baoab.temperature << ", "
+      << "friction = " << baoab.friction << ", "
       << "time step length = " << dt << ", "
-      << "total time = " << total_time << ", "
-      << "random seed = " << random_seed << ", "
-      << "number of bins in histogram = " << nbins
+      << "total steps = " << total_steps << ", "
+      << "number of bins in histogram = " << histogram.size()
       << std::endl;
+
+  plt1.open();
+  plt2.open();
+
+  files_are_open = true;
 }
 
-Experiment::~Experiment() {
+void Experiment::closeFiles() {
   log.close();
   results.close();
+
+  plt1.close();
+  plt2.close();
+
+  files_are_open = false;
 }
 
 void Experiment::compute_step() {
@@ -66,7 +100,7 @@ void Experiment::simulate() {
         // baoab.plot();
       }
 
-      const double t = static_cast<double>(step) * dt;
+      const double t = static_cast<double>(step) * baoab.dt;
 
       log << t << " " << baoab.q << " " << baoab.p
           << "\n\n"

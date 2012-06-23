@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "BAOAB.h"
+#include "Plotter.h"
 
 BAOAB::BAOAB(double K_,
              double friction_, double temperature_,
@@ -30,6 +31,23 @@ BAOAB::BAOAB(double K_,
   assert(fabs(dot(G(q), p)) < tol);
 
   computeForce();
+}
+
+BAOAB& BAOAB::operator=(const BAOAB& other) {
+  if (this != &other) {
+    q = other.q;
+    p = other.p;
+    K = other.K;
+    friction = other.friction;
+    temperature = other.temperature;
+    dt = other.dt;
+    c1 = exp(-friction * dt);
+    c3 = sqrt(temperature * (1.0 - c1 * c1));
+    f = other.f;
+    rng = other.rng;
+  }
+
+  return *this;
 }
 
 void BAOAB::computeForce() {
@@ -93,7 +111,7 @@ void BAOAB::O() {
   assert(fabs(g(q)) < tol && fabs(dot(G(q), p)) < tol);
 }
 
-void BAOAB::plot() const {
+void BAOAB::plot(Plotter& plotter) {
   ostringstream cmd;
   cmd << "unset key\n"
       << "set samples 1000\n"

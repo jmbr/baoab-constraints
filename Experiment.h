@@ -7,18 +7,28 @@
 
 #include "BAOAB.h"
 #include "Histogram.h"
+#include "Plotter.h"
 
 class Experiment {
  public:
+  Experiment();
+
   Experiment(double K, double friction, double temperature,
              double dt, double time,
-             unsigned random_seed, size_t nbins,
+             unsigned random_seed, unsigned nbins,
              bool plot = false);
 
+  Experiment(const Experiment& e);
+
   ~Experiment();
-  
+
+  Experiment& operator=(const Experiment& other);
+
+  void openFiles();
+  void closeFiles();
+
   void simulate();
-  
+
  private:
   void compute_step();
 
@@ -27,11 +37,12 @@ class Experiment {
   // BAOAB_with_DoPri baoab;
   // BAOAB_with_Rotation baoab;
   Histogram histogram;
-  double dt;
   unsigned long long total_steps;
   bool plot;
-  
+  Plotter plt1, plt2;
+
  private:
+  bool files_are_open;
   std::ofstream log;
   std::ofstream results;
 };

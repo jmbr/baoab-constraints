@@ -13,8 +13,15 @@
 
 #include "linspace.h"
 #include "Histogram.h"
+#include "Plotter.h"
 
 using std::vector;
+
+Histogram::Histogram(unsigned nbins_, double temperature_, double K_)
+    : nbins(nbins_), histogram(nbins), reference(nbins),
+      temperature(temperature_), K(K_) {
+  compute();
+}
 
 static double f(double theta, void* params) {
   const double temperature = *((double *) params);
@@ -37,6 +44,10 @@ static double f(double theta, void* params) {
 }
   
 void Histogram::compute() {
+  gsl_integration_workspace* w;
+
+  w = gsl_integration_workspace_alloc(10000);
+
   double params[] = { temperature, K };
   
   gsl_function F;
@@ -46,11 +57,11 @@ void Histogram::compute() {
   double err;
   double partition_function;
   vector<double> intervals = linspace<double>(-M_PI, M_PI, nbins+1);
-  
+
   gsl_integration_qags(&F, -M_PI, M_PI, 0, 1e-12, 10000,
                        w, &partition_function, &err);
-  
-  for (size_t n = 0; n < histogram.size(); n++) {
+
+  for (unsigned n = 0; n < histogram.size(); n++) {
     const double a = intervals[n], b = intervals[n+1];
 
     gsl_integration_qags(&F, a, b, 0, 1e-12, 10000,
@@ -66,10 +77,12 @@ void Histogram::compute() {
   std::cout << std::setprecision(16)
             << "Partition function = "
             << partition_function << "\n";
-  for (size_t k = 0; k < nbins; k++)
+  for (unsigned k = 0; k < nbins; k++)
     std::cout << reference[k] << " ";
   std::cout << endl;
 #endif
+
+  gsl_integration_workspace_free(w);
 }
 
 unsigned long& Histogram::operator[](double theta) {
@@ -77,7 +90,7 @@ unsigned long& Histogram::operator[](double theta) {
   const double N = static_cast<double>(nbins);
   const double i = floor((theta - a) / (b - a) * N);
 
-  return histogram.at(static_cast<size_t>(i));
+  return histogram.at(static_cast<unsigned>(i));
 }
 
 unsigned long long Histogram::total() const {
@@ -85,7 +98,7 @@ unsigned long long Histogram::total() const {
   //                        0, std::plus<unsigned long>());
   unsigned long long count = 0;
 
-  for (size_t k = 0; k < histogram.size(); k++)
+  for (unsigned k = 0; k < histogram.size(); k++)
     count += histogram[k];
 
   return count;
@@ -96,7 +109,7 @@ double Histogram::error() const {
   // more elegant here.
   const double tot = static_cast<double>(total());
   double err = -INFINITY;               // Error in infty-norm.
-  for (size_t k = 0; k < nbins; k++) {
+  for (unsigned k = 0; k < nbins; k++) {
     const double freq = static_cast<double>(histogram[k]) / tot;
     err = std::max(err, fabs(freq - reference[k]));
   }
@@ -104,7 +117,7 @@ double Histogram::error() const {
   
 #if 0
   double err = 0.0;
-  for (size_t k = 0; k < nbins; k++)
+  for (unsigned k = 0; k < nbins; k++)
     err += fabs(histogram[k] / tot - reference[k]);
   return err / static_cast<double>(nbins);
 #endif
@@ -114,17 +127,17 @@ std::ostream& operator<<(std::ostream& stream, const Histogram& h) {
   const auto tot = h.total();
 
   stream << std::setprecision(16) << tot << " ";
-  for (size_t k = 0; k < h.nbins; k++)
+  for (unsigned k = 0; k < h.nbins; k++)
     stream << h.histogram[k] << " ";
 
   return stream << std::endl;
 }
 
-static inline double angle(size_t k, size_t nbins) {
+static inline double angle(unsigned k, unsigned nbins) {
   return 2.0 * M_PI / (double) nbins * (double) k - M_PI;
 }
 
-void Histogram::plot() const {
+void Histogram::plot(Plotter& plotter) {
   const double tot = static_cast<double>(total());
   const double order_error = log10(error());
   

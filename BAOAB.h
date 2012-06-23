@@ -7,11 +7,12 @@
 #include <boost/random.hpp>
 
 #include "double2.h"
-#include "Plotter.h"
 
 using namespace std;
 
 const double tol = 1e-14;
+
+class Plotter;
 
 class BAOAB_did_not_converge : public std::exception {
  public:
@@ -21,26 +22,28 @@ class BAOAB_did_not_converge : public std::exception {
 };
 
 class BAOAB {
+ public:
+  double2 q, p;
+  double K;
+  double friction;
+  double temperature;
+  double dt;
+
  protected:
-  const double K;
-  const double friction;
-  const double temperature;
-  const double dt;
-  const double c1, c3;
+  double c1, c3;
   double2 f;
 
   // boost::mt11213b rng;
   boost::mt19937 rng;
   boost::random::normal_distribution<double> normal;
 
-  simulator::Plotter plotter;
-
  public:
-  double2 q;
-  double2 p;
+  BAOAB() {}
 
   BAOAB(double K_, double friction_,
         double temperature_, double dt_, unsigned seed);
+
+  BAOAB& operator=(const BAOAB& other);
 
   double angle() const;
 
@@ -48,7 +51,7 @@ class BAOAB {
 
   void operator()();
 
-  void plot() const;
+  void plot(Plotter& plotter);
 
  protected:
   double g(const double2& r);
@@ -62,6 +65,8 @@ class BAOAB {
 
 class BAOAB_with_RATTLE : public virtual BAOAB {
  public:
+  BAOAB_with_RATTLE() {}
+
   BAOAB_with_RATTLE(double K_, double friction_, double temperature_,
                     double dt_, unsigned seed)
       : BAOAB(K_, friction_, temperature_, dt_, seed) {}
@@ -75,6 +80,8 @@ class BAOAB_with_RATTLE : public virtual BAOAB {
 
 class BAOAB_with_DoPri : public virtual BAOAB {
  public:
+  BAOAB_with_DoPri() {}
+
   BAOAB_with_DoPri(double K_, double friction_, double temperature_,
                    double dt_, unsigned seed)
       : BAOAB(K_, friction_, temperature_, dt_, seed) {}
@@ -85,6 +92,8 @@ class BAOAB_with_DoPri : public virtual BAOAB {
 
 class BAOAB_with_Rotation : public virtual BAOAB {
  public:
+  BAOAB_with_Rotation() {}
+
   BAOAB_with_Rotation(double K_
 #ifdef NDEBUG
                       __attribute__((unused))

@@ -5,32 +5,27 @@
 
 #include <string>
 
-namespace simulator {
-
 class Plotter {
   std::string gnuplot_exe;
   std::FILE* fp;
 
  public:
   Plotter(std::string gnuplot_exe_ = GNUPLOT_EXECUTABLE)
-      : gnuplot_exe(gnuplot_exe_), fp(0) {
-    open();
-  }
-  
+      : gnuplot_exe(gnuplot_exe_), fp(nullptr) {}
+
   ~Plotter() {
-    if (fp != 0)
-      std::fclose(fp);
+    close();
   }
-  
+
   int open(bool persist = false);
 
-  void send(std::string command) const;
+  void close();
 
-  void sendline(std::string line = "") const;
+  void send(std::string command);
 
-  void flush() const;
+  void sendline(std::string line = "");
+
+  void flush();
 };
-
-} // namespace simulator
 
 #endif

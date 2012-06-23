@@ -8,10 +8,10 @@ struct Options {
   double temperature;
   double friction;
   double min_dt, max_dt;
-  size_t num_experiments;
+  unsigned num_experiments;
   double total_time;
   unsigned random_seed;
-  size_t nbins;
+  unsigned nbins;
   bool plot;
 
   Options()
@@ -25,16 +25,16 @@ struct Options {
         random_seed(0),
         nbins(50),
         plot(false) {}
-  
+
   Options(double K_,
           double temperature_,
           double friction_,
           double min_dt_,
           double max_dt_,
-          size_t num_experiments_,
+          unsigned num_experiments_,
           double total_time_,
           unsigned random_seed_,
-          size_t nbins_,
+          unsigned nbins_,
           bool plot_ = false)
       : K(K_),
         temperature(temperature_),
