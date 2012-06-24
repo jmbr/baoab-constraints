@@ -33,14 +33,14 @@ set(LINK_SEARCH_END_STATIC "ON")
 
 add_library(baoab
   BAOAB.h BAOAB.cpp
-  BAOAB_with_Rotation.cpp
+#  BAOAB_with_Rotation.cpp
   BAOAB_with_RATTLE.cpp
-  BAOAB_with_DoPri.cpp
+#  BAOAB_with_DoPri.cpp
   Plotter.h Plotter.cpp
   Histogram.h Histogram.cpp
   linspace.h double2.h
-  dop853.h dop853.c
-  dopri5.h dopri5.c
+#  dop853.h dop853.c
+#  dopri5.h dopri5.c
   Experiment.h Experiment.cpp)
 
 add_executable(simul simul.cpp Options.cpp)
