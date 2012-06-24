@@ -1,17 +1,20 @@
-#+TITLE: BAOAB + Constraints
+
+*  BAOAB + Constraints
 
 This is the source code for the numerical experiments of the constrained variant of BAOAB.
 
-* Dependencies
-** Boost (http://boost.org)
-** CMake (http://cmake.org)
+** Dependencies
 
-* How to compile and run this program
-** Change the current directory to the folder where the source code is located.
-** Do the following:
-*** mkdir build
-*** cd build
-*** cmake -DCMAKE_BUILD_TYPE=Release ..
-*** make
-** After these steps, you should have a binary file called `simul'.
-** You can then see the command line options available by running ./simul --help
+*** Boost (http://boost.org)
+*** GNU Scientific Library (http://www.gnu.org/software/gsl/)
+*** CMake (http://cmake.org)
+
+** How to compile and run this program
+*** Change the current directory to the folder where the source code is located.
+*** Do the following:
+**** mkdir build
+**** cd build
+**** cmake -DCMAKE_BUILD_TYPE=Release ..
+**** make
+*** After these steps, you should have a binary file called `simul'.
+*** You can then see the command line options available by running ./simul --help
