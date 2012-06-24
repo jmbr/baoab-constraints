@@ -69,8 +69,10 @@ void Experiment::openFiles() {
       << "number of bins in histogram = " << histogram.size()
       << std::endl;
 
-  plt1.open();
-  plt2.open();
+  if (plot) {
+    plt1.open();
+    plt2.open();
+  }
 
   files_are_open = true;
 }
