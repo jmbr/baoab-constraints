@@ -21,7 +21,7 @@ find_package(OpenMP)
 #find_package(Threads)
 #find_package(GTest)
   
-add_definitions(-DHAVE_SSE)
+# add_definitions(-DHAVE_SSE)
 
 set(CXX_WARN_FLAGS "-W -Wall -Wextra -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal")
 set(CMAKE_CXX_FLAGS_DEBUG "-O2")
