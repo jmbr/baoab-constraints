@@ -31,6 +31,7 @@ int main(int argc, char* argv[]) {
     const double dt = dts[k];
     experiments[k] = new Experiment(o.K, o.friction, o.temperature, dt,
                                     o.total_time, seeds(rng), o.nbins, o.plot);
+    experiments[k]->openFiles();
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -41,19 +42,20 @@ int main(int argc, char* argv[]) {
   for (r = 0; r < o.num_experiments; r++) {
     Experiment& experiment = *experiments[r];
 
-    experiment.openFiles();
-
     try {
       experiment.simulate();
     } catch (BAOAB_did_not_converge& e) {
       cerr << "Experiment number " << r << " was not successfuly completed: "
            << e.what() << endl;
     }
-
-    experiment.closeFiles();
   }
 
 #pragma omp barrier
+
+  for (unsigned k = 0; k < experiments.size(); k++) {
+    experiments[k]->closeFiles();
+    delete experiments[k];
+  }
 
   return EXIT_SUCCESS;
 }

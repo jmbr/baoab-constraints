@@ -22,18 +22,9 @@ class Experiment {
 
   ~Experiment();
 
-  Experiment& operator=(const Experiment& other) {
-    if (this != &other) {
-      baoab = other.baoab;
-      histogram = other.histogram;
-      total_steps = other.total_steps;
-      plot = other.plot;
-    }
+  Experiment& operator=(const Experiment& other);
 
-    return *this;
-  }
-
-  void openFiles();
+    void openFiles();
   void closeFiles();
 
   void simulate();

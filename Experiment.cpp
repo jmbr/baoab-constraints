@@ -25,7 +25,6 @@ Experiment::~Experiment() {
     closeFiles();
 }
 
-#if 0
 Experiment& Experiment::operator=(const Experiment& other) {
   if (this != &other) {
     baoab = other.baoab;
@@ -36,7 +35,6 @@ Experiment& Experiment::operator=(const Experiment& other) {
 
   return *this;
 }
-#endif
 
 void Experiment::openFiles() {
   const double dt = baoab.dt;
