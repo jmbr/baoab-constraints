@@ -3,7 +3,7 @@
 
 #include <vector>
 
-template <typename T = double>
+template <typename T>
 std::vector<T> linspace(T a, T b, size_t num_elems) {
   T h = (b - a) / static_cast<T>(num_elems - 1);
   std::vector<T> xs(num_elems);

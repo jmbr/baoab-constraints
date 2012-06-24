@@ -4,8 +4,8 @@ enable_language(CXX C)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-set(Boost_USE_STATIC_LIBS    ON)
-set(Boost_USE_MULTITHREADED  OFF)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED OFF)
 set(Boost_USE_STATIC_RUNTIME ON)
 find_package(Boost REQUIRED program_options)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -27,7 +27,7 @@ set(CXX_WARN_FLAGS "-W -Wall -Wextra -Wconversion -Wshadow -Wpointer-arith -Wcas
 set(CMAKE_CXX_FLAGS_DEBUG "-O2")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -march=native -msse4.2 -mssse3")
 # set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native")
-set(CMAKE_CXX_FLAGS "-ggdb3 -std=c++0x ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-ggdb3 ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 set(LINK_SEARCH_END_STATIC "ON")
 

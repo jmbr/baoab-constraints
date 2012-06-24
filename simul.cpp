@@ -24,13 +24,13 @@ int main(int argc, char* argv[]) {
   const unsigned max_seed = numeric_limits<unsigned>::max();
   boost::random::uniform_int_distribution<unsigned> seeds(0, max_seed);
 
-  vector<Experiment> experiments(o.num_experiments);
+  vector<Experiment*> experiments(o.num_experiments);
   vector<double> dts = linspace<double>(o.min_dt, o.max_dt, o.num_experiments);
 
   for (unsigned k = 0; k < o.num_experiments; k++) {
     const double dt = dts[k];
-    experiments[k] = Experiment(o.K, o.friction, o.temperature, dt,
-                                o.total_time, seeds(rng), o.nbins, o.plot);
+    experiments[k] = new Experiment(o.K, o.friction, o.temperature, dt,
+                                    o.total_time, seeds(rng), o.nbins, o.plot);
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
   unsigned r;
 #pragma omp parallel for private(r)
   for (r = 0; r < o.num_experiments; r++) {
-    Experiment& experiment = experiments[r];
+    Experiment& experiment = *experiments[r];
 
     experiment.openFiles();
 

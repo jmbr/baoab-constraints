@@ -1,7 +1,7 @@
 #include "Plotter.h"
 
 int Plotter::open(bool persist) {
-  if (fp != nullptr)
+  if (fp != 0)
     return 0;
 
   std::string command = gnuplot_exe;
@@ -12,9 +12,9 @@ int Plotter::open(bool persist) {
 }
 
 void Plotter::close() {
-  if (fp != nullptr) {
+  if (fp != 0) {
     std::fclose(fp);
-    fp = nullptr;
+    fp = 0;
   }
 }
 

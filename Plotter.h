@@ -11,7 +11,7 @@ class Plotter {
 
  public:
   Plotter(std::string gnuplot_exe_ = GNUPLOT_EXECUTABLE)
-      : gnuplot_exe(gnuplot_exe_), fp(nullptr) {}
+      : gnuplot_exe(gnuplot_exe_), fp(0) {}
 
   ~Plotter() {
     close();

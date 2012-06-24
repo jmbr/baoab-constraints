@@ -124,7 +124,7 @@ double Histogram::error() const {
 }
 
 std::ostream& operator<<(std::ostream& stream, const Histogram& h) {
-  const auto tot = h.total();
+  const unsigned long long tot = h.total();
 
   stream << std::setprecision(16) << tot << " ";
   for (unsigned k = 0; k < h.nbins; k++)

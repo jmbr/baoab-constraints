@@ -25,6 +25,7 @@ Experiment::~Experiment() {
     closeFiles();
 }
 
+#if 0
 Experiment& Experiment::operator=(const Experiment& other) {
   if (this != &other) {
     baoab = other.baoab;
@@ -35,13 +36,14 @@ Experiment& Experiment::operator=(const Experiment& other) {
 
   return *this;
 }
+#endif
 
 void Experiment::openFiles() {
   const double dt = baoab.dt;
 
   std::ostringstream log_name;
   log_name << "log-dt-" << dt << ".dat";
-  log.open(log_name.str());
+  log.open(log_name.str().c_str());
   if (!log.is_open()) {
     std::cerr << "Unable to open log file for dt = " << dt
               << std::endl;
@@ -52,7 +54,7 @@ void Experiment::openFiles() {
 
   std::ostringstream results_name;
   results_name << "result-dt-" << dt << ".dat";
-  results.open(results_name.str());
+  results.open(results_name.str().c_str());
   if (!results.is_open()) {
     std::cerr << "Unable to open results file for dt = "
               << dt << std::endl;

@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include <ostream>
-#include <initializer_list>
+// #include <initializer_list>
 
 #ifdef HAVE_SSE
 typedef double v2df __attribute__ ((vector_size (2 * sizeof(double))));
@@ -28,9 +28,9 @@ struct double2 {
 
   double2(double x_, double y_) : x(x_), y(y_) {}
 
-  double2(std::initializer_list<double> list) {
-    std::copy(list.begin(), list.end(), array);
-  }
+  // double2(std::initializer_list<double> list) {
+  //   std::copy(list.begin(), list.end(), array);
+  // }
 
   inline double& operator[](size_t i) {
     return array[i];
