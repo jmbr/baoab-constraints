@@ -8,8 +8,8 @@
 
 #ifdef HAVE_SSE
 typedef double v2df __attribute__ ((vector_size (2 * sizeof(double))));
-#else
-# warning "SIMD (SSE) operations disabled."
+// #else
+// # warning "SIMD (SSE) operations disabled."
 #endif
 
 // TODO Take advantage of C++11's move semantics to reduce the need
