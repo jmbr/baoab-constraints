@@ -7,7 +7,12 @@ void BAOAB_with_Rotation::A() {
   theta += dt / 2.0 * dtheta;
 
   double s, c;
+#ifdef _GNU_SOURCE
   sincos(theta, &s, &c);
+#else
+  s = sin(theta);
+  c = cos(theta);
+#endif
 
   q.x =  c;
   q.y =  s;

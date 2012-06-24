@@ -28,7 +28,12 @@ static double f(double theta, void* params) {
   const double K = *((double *) params + 1);
 
   double s, c;
+#ifdef _GNU_SOURCE
   sincos(theta, &s, &c);
+#else
+  s = sin(theta);
+  c = cos(theta);
+#endif
   const double D = sqrt(K) * c * c + s * s / sqrt(K);
 
   const double r = sqrt(c * c / K + s * s);
