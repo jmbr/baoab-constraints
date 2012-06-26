@@ -10,7 +10,7 @@ int Options::parse(int argc, char* argv[]) {
   po::options_description desc("Allowed options");
   desc.add_options()
       ("help", "Display help information")
-      ("K", po::value<double>(), "Length of the ellipse's horizontal axis")
+      ("K", po::value<double>(), "Parameter that characterizes the ellipse")
       ("temperature", po::value<double>(), "Temperature")
       ("friction", po::value<double>(), "Friction coefficient")
       ("dt", po::value<double>(), "Time step length")
