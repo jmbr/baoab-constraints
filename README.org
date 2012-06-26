@@ -4,10 +4,10 @@
 This is the source code for the numerical experiments of the constrained variant of BAOAB.
 
 ** Dependencies
-
 *** Boost (http://boost.org)
 *** GNU Scientific Library (http://www.gnu.org/software/gsl/)
 *** CMake (http://cmake.org)
+*** Armadillo (http://arma.sf.net)
 
 ** How to compile and run this program
 *** Change the current directory to the folder where the source code is located.

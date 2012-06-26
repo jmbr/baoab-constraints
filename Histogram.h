@@ -9,13 +9,13 @@ class Histogram {
   unsigned nbins;
   std::vector<unsigned long> histogram;
   std::vector<double> reference;
-  double temperature, K;
+  double temperature;
   double minimum, maximum;
 
  public:
   Histogram() {}
 
-  Histogram(unsigned nbins_, double temperature_, double K_);
+  Histogram(unsigned nbins_, double temperature_);
 
   unsigned long& operator[](double theta);
 

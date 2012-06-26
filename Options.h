@@ -4,7 +4,6 @@
 #include <cstdlib>
 
 struct Options {
-  double K;
   double temperature;
   double friction;
   double min_dt, max_dt;
@@ -15,8 +14,7 @@ struct Options {
   bool plot;
 
   Options()
-      : K(-1),
-        temperature(-1),
+      : temperature(-1),
         friction(1e4),
         min_dt(-1),
         max_dt(-1),
@@ -26,8 +24,7 @@ struct Options {
         nbins(50),
         plot(false) {}
 
-  Options(double K_,
-          double temperature_,
+  Options(double temperature_,
           double friction_,
           double min_dt_,
           double max_dt_,
@@ -36,8 +33,7 @@ struct Options {
           unsigned random_seed_,
           unsigned nbins_,
           bool plot_ = false)
-      : K(K_),
-        temperature(temperature_),
+      : temperature(temperature_),
         friction(friction_),
         min_dt(min_dt_),
         max_dt(max_dt_),

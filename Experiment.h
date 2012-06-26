@@ -13,9 +13,12 @@ class Experiment {
  public:
   Experiment();
 
-  Experiment(double K, double friction, double temperature,
-             double dt, double time,
-             unsigned random_seed, unsigned nbins,
+  Experiment(double friction,
+             double temperature,
+             double dt,
+             double time,
+             unsigned random_seed,
+             unsigned nbins,
              bool plot = false);
 
   Experiment(const Experiment& e);
@@ -24,7 +27,7 @@ class Experiment {
 
   Experiment& operator=(const Experiment& other);
 
-    void openFiles();
+  void openFiles();
   void closeFiles();
 
   void simulate();

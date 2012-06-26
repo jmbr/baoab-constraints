@@ -1,4 +1,4 @@
-function data = histogram(K, temperature, nbins)
+function hst = histogram(temperature, nbins)
 
 format long
 
@@ -6,30 +6,25 @@ if nargin < 3
     nbins = 500;
 end
 
-D = @(theta) sqrt(K) .* cos(theta).^2 + sin(theta).^2 ./ sqrt(K);
-d = 1.0;
-a = 2.0;
-r0 = 1.0;
-r = @(theta) sqrt(cos(theta).^2 / K + sin(theta).^2);
+d = 1;
+a = 2;
+r0 = sqrt(2.0);
+r = @(theta) sqrt((cos(theta) - 1).^2 + sin(theta).^2);
 U = @(theta) d * (1 - exp(-a * (r(theta) - r0))).^2;
-% U = @(theta) cos(theta).^2 .* sin(theta).^2 / K;
-%U = @(theta) sin(theta);
-f = @(theta) sqrt(D(theta)) .* exp(-U(theta) ./ temperature);
+f = @(theta) exp(-U(r(theta)) ./ temperature);
 
-N = 1e7;
+partition_function = quadgk(f, -pi, pi);
 
-z1 = quadgk(f, -pi, pi);
-
-hst1 = zeros(1, nbins);
+hst = zeros(1, nbins);
 intervals = linspace(-pi, pi, nbins + 1);
 
 for r = 1:nbins
     a = intervals(r);
     b = intervals(r+1);
-    hst1(r) = quadgk(f, a, b) / z1;
+    hst(r) = quadgk(f, a, b) / partition_function;
 end
 
 figure;
-plot(intervals(2:end), hst1);
-data = [intervals(1:end-1)' hst1'];
-save('histogram.dat', '-ascii', 'data')
+plot(intervals(2:end), hst);
+% data = [intervals(1:end-1)' hst'];
+% save('histogram.dat', '-ascii', 'data')

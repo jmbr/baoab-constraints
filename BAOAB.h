@@ -6,11 +6,14 @@
 
 #include <boost/random.hpp>
 
-#include "double2.h"
+#include <armadillo>
 
-using namespace std;
+using namespace arma;
 
 const double tol = 1e-14;
+
+const unsigned nparticles = 3;                // # of particles
+const unsigned nconstraints = nparticles - 1; // # of constraints
 
 class Plotter;
 
@@ -23,15 +26,14 @@ class BAOAB_did_not_converge : public std::exception {
 
 class BAOAB {
  public:
-  double2 q, p;
-  double K;
+  vec::fixed<2 * nparticles> q, p;
   double friction;
   double temperature;
   double dt;
 
  protected:
   double c1, c3;
-  double2 f;
+  vec::fixed<2 * nparticles> f;
 
   // boost::mt11213b rng;
   boost::mt19937 rng;
@@ -40,8 +42,10 @@ class BAOAB {
  public:
   BAOAB() {}
 
-  BAOAB(double K_, double friction_,
-        double temperature_, double dt_, unsigned seed);
+  BAOAB(double friction_,
+        double temperature_,
+        double dt_,
+        unsigned seed);
 
   BAOAB& operator=(const BAOAB& other);
 
@@ -54,9 +58,9 @@ class BAOAB {
   void plot(Plotter& plotter);
 
  protected:
-  double g(const double2& r);
+  vec::fixed<nconstraints> g(const vec& r);
 
-  double2 G(const double2& r);
+  mat::fixed<nconstraints, 2 * nparticles> G(const vec& r);
 
   virtual void A() = 0;
   void B();
@@ -67,46 +71,17 @@ class BAOAB_with_RATTLE : public virtual BAOAB {
  public:
   BAOAB_with_RATTLE() {}
 
-  BAOAB_with_RATTLE(double K_, double friction_, double temperature_,
-                    double dt_, unsigned seed)
-      : BAOAB(K_, friction_, temperature_, dt_, seed) {}
+  BAOAB_with_RATTLE(double friction_,
+                    double temperature_,
+                    double dt_,
+                    unsigned seed)
+      : BAOAB(friction_, temperature_, dt_, seed) {}
 
  protected:
   void A();
 
  private:
-  void rattle(double h, const size_t max_iters = 1e7);
-};
-
-class BAOAB_with_DoPri : public virtual BAOAB {
- public:
-  BAOAB_with_DoPri() {}
-
-  BAOAB_with_DoPri(double K_, double friction_, double temperature_,
-                   double dt_, unsigned seed)
-      : BAOAB(K_, friction_, temperature_, dt_, seed) {}
-
- protected:
-  void A();
-};
-
-class BAOAB_with_Rotation : public virtual BAOAB {
- public:
-  BAOAB_with_Rotation() {}
-
-  BAOAB_with_Rotation(double K_
-#ifdef NDEBUG
-                      __attribute__((unused))
-#endif
-                      ,
-                      double friction_, double temperature_,
-                      double dt_, unsigned seed)
-      : BAOAB(1.0, friction_, temperature_, dt_, seed) {
-    assert(fabs(K_ - 1.0) < 1e-32);
-  }
-
- protected:
-  void A();
+  void rattle(double h, unsigned max_iters = 1e7);
 };
 
 #endif

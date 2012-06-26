@@ -11,11 +11,15 @@
 Experiment::Experiment()
     : total_steps(0), plot(false) {}
 
-Experiment::Experiment(double K, double friction, double temperature,
-                       double dt_, double total_time,
-                       unsigned random_seed, unsigned nbins, bool plot_)
-    : baoab(K, friction, temperature, dt_, random_seed),
-      histogram(nbins, temperature, K),
+Experiment::Experiment(double friction,
+                       double temperature,
+                       double dt_,
+                       double total_time,
+                       unsigned random_seed,
+                       unsigned nbins,
+                       bool plot_)
+    : baoab(friction, temperature, dt_, random_seed),
+      histogram(nbins, temperature),
       total_steps(static_cast<unsigned long long>(ceil(total_time / dt_))),
       plot(plot_),
       files_are_open(false) {}
@@ -61,8 +65,7 @@ void Experiment::openFiles() {
 
   results << std::setprecision(14);
 
-  log << "K = " << baoab.K << ", "
-      << "temperature = " << baoab.temperature << ", "
+  log << "temperature = " << baoab.temperature << ", "
       << "friction = " << baoab.friction << ", "
       << "time step length = " << dt << ", "
       << "total steps = " << total_steps << ", "
@@ -98,7 +101,7 @@ void Experiment::simulate() {
   for (size_t step = 1; step <= total_steps; step++) {
     compute_step();
 
-    if (step % static_cast<size_t>(1e6) == 0 || step == total_steps) {
+    if (step % static_cast<size_t>(1e5) == 0 || step == total_steps) {
       if (plot) {
         histogram.plot(plt1);
         // baoab.plot(plt2);
@@ -106,8 +109,9 @@ void Experiment::simulate() {
 
       const double t = static_cast<double>(step) * baoab.dt;
 
-      log << t << " " << baoab.q << " " << baoab.p
-          << "\n\n"
+      log << t << " "
+          << trans(baoab.q) << " "
+          << trans(baoab.p) << "\n\n"
           << histogram << std::endl;
 
       results << t << " " << histogram.error() << std::endl;

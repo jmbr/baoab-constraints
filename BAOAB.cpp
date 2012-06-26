@@ -3,12 +3,11 @@
 
 #include "BAOAB.h"
 #include "Plotter.h"
+#include "abort_unless.h"
 
-BAOAB::BAOAB(double K_,
-             double friction_, double temperature_,
+BAOAB::BAOAB(double friction_, double temperature_,
              double dt_, unsigned seed)
-    : K(K_),
-      friction(friction_),
+    : friction(friction_),
       temperature(temperature_),
       dt(dt_),
       c1(exp(-friction * dt)),
@@ -16,19 +15,12 @@ BAOAB::BAOAB(double K_,
   rng.seed(seed);
 
   // Set up initial conditions (must satisfy the constraints).
-  q.x = 0.0;
-  q.y = 1.0;
-  p.x = -1.0;
-  p.y = 0.0;
-  // boost::random::uniform_real_distribution<double> unif0_2pi(0.0, 2.0 * M_PI);
-  // const double theta = unif0_2pi(rng);
-  // q.x = cos(theta) / sqrt(K);
-  // q.y = sin(theta);
-  // p.x = -q.y;
-  // p.y = K * q.x;
+  q(0) = 1.0; q(1) = 0.0;
+  q(2) = 0.0; q(3) = 0.0;
+  q(4) =-1.0; q(5) = 0.0;
 
-  assert(fabs(g(q)) < tol);
-  assert(fabs(dot(G(q), p)) < tol);
+  abort_unless(norm(g(q), "inf") < tol
+               && norm(G(q) * p, "inf") < tol);
 
   computeForce();
 }
@@ -37,7 +29,6 @@ BAOAB& BAOAB::operator=(const BAOAB& other) {
   if (this != &other) {
     q = other.q;
     p = other.p;
-    K = other.K;
     friction = other.friction;
     temperature = other.temperature;
     dt = other.dt;
@@ -52,16 +43,57 @@ BAOAB& BAOAB::operator=(const BAOAB& other) {
 
 void BAOAB::computeForce() {
   // If you change sth here, remember to change the histogram routine.
+  const double d = 1.0, a = 2.0, r0 = sqrt(2.0);
 
-  const double d = 1.0, a = 2.0, r0 = 1.0, r = q.norm();
+  vec::fixed<2> v;
+  v(0) = q(0) - q(4);
+  v(1) = q(1) - q(5);
+
+  const double r = norm(v, 2);
   const double w = exp(-a * (r - r0));
-  const double morse_factor = -2.0 * a * d * (w - w * w) / r;
-  f.x = morse_factor * q.x;
-  f.y = morse_factor * q.y;
+  const double morse_factor = 2.0 * a * d * (w - w * w) / r;
 
-  // f.x = -q.y * 2.0 * q.x; f.y = -q.x * q.x;
-  // f.x = -2.0 * q.x * q.y * q.y; f.y = -2.0 * q.x * q.x * q.y;
-  // f.x =  0.0; f.y = -1.0;
+  f(0) = -morse_factor * v(0);
+  f(1) = -morse_factor * v(1);
+  f(2) =  0.0;
+  f(3) =  0.0;
+  f(4) =  morse_factor * v(0);
+  f(5) =  morse_factor * v(1);
+
+  // std::cout << __func__ << ": " << trans(f) << std::endl;
+}
+
+vec::fixed<nconstraints> BAOAB::g(const vec& r) {
+  vec::fixed<nconstraints> v;
+  v.zeros();
+
+  for (unsigned i = 0; i < nconstraints; i++) {
+    vec::fixed<2> u;
+    u(0) = r(2 * i) - r(2 * i + 2);
+    u(1) = r(2 * i + 1) - r(2 * i + 3);
+    v(i) = (dot(u, u) - 1.0) / 2.0;
+  }
+
+  return v;
+}
+
+mat::fixed<nconstraints, 2 * nparticles> BAOAB::G(const vec& r) {
+  mat::fixed<nconstraints, 2 * nparticles> m;
+  m.zeros();
+
+  for (unsigned i = 0; i < nconstraints; i++) {
+    vec::fixed<2> u;
+
+    u(0) = r(2 * i)     - r(2 * i + 2);
+    u(1) = r(2 * i + 1) - r(2 * i + 3);
+
+    m(i, 2 * i)     =  u(0);
+    m(i, 2 * i + 1) =  u(1);
+    m(i, 2 * i + 2) = -u(0);
+    m(i, 2 * i + 3) = -u(1);
+  }
+
+  return m;
 }
 
 void BAOAB::operator()() {
@@ -73,53 +105,75 @@ void BAOAB::operator()() {
   B();
 }
 
-double BAOAB::angle() const {
-  return atan2(q.y, sqrt(K) * q.x);
-}
-
-double BAOAB::g(const double2& r) {
-  return K * r.x * r.x + r.y * r.y - 1.0;
-}
-
-double2 BAOAB::G(const double2& r) {
-  return double2(2.0 * K * r.x, 2.0 * r.y);
-}
-
 void BAOAB::B() {
-  const double2 Gq = G(q);
-  const double Gq_times_Gq_trans = dot(Gq, Gq);
-  const double2 aux = 2.0 / dt * p + f;
-  const double mu = dot(Gq, aux) / (Gq_times_Gq_trans);
-  p += dt / 2.0 * (f - mu * Gq);
+  const mat::fixed<nconstraints, 2 * nparticles> Gq = G(q);
+  const vec::fixed<nconstraints> b = Gq * (2.0 / dt * p + f);
+  const vec::fixed<nconstraints> mu = solve(Gq * trans(Gq), b);
 
-  assert(fabs(g(q)) < tol && fabs(dot(G(q), p)) < tol);
+  p += dt / 2.0 * (f - trans(Gq) * mu);
+
+  // std::cout << __func__ << ": p = " << trans(p);
+
+  abort_unless(norm(g(q), "inf") < tol
+               && norm(G(q) * p, "inf") < tol);
 }
 
 void BAOAB::O() {
-  const double x = q.x, y = q.y;
-  const double K2 = K * K, x2 = x * x, y2 = y * y;
-  const double denom = x2 * K2 + y2;
-  // M = I - H, where H = G' * G / (G * G')
-  const double2 Mrow1(1.0 - x2 * K2 / denom, - x * y * K / denom);
-  const double2 Mrow2(-x * y * K / denom, 1.0 - y2 / denom);
+  vec::fixed<2 * nparticles> R;
+  for (vec::iterator r = R.begin(); r != R.end(); ++r)
+    *r = normal(rng);
 
-  const double2 S(normal(rng), normal(rng));
-  const double2 R(dot(Mrow1, S), dot(Mrow2, S));
+  const mat::fixed<nconstraints, 2 * nparticles> Gq = G(q);
+  const vec::fixed<nconstraints> b = friction * c3 / (1.0 - c1) * G(q) * R;
+  const vec::fixed<nconstraints> mu = solve(Gq * trans(Gq), b);
 
-  p = c1 * p + c3 * R;
+  p = -(1.0 - c1) / friction * trans(Gq) * mu + c1 * p + c3 * R;
 
-  assert(fabs(g(q)) < tol && fabs(dot(G(q), p)) < tol);
+  // std::cout << __func__ << ": p = " << trans(p);
+
+  abort_unless(norm(g(q), "inf") < tol
+               && norm(G(q) * p, "inf") < tol);
 }
 
 void BAOAB::plot(Plotter& plotter) {
-  ostringstream cmd;
+  std::ostringstream cmd;
   cmd << "unset key\n"
       << "set samples 1000\n"
-      << "set xrange [-2:2]\n"
-      << "set yrange [-2:2]\n"
-      << "plot '-' with points pointtype 7 pointsize 3,"
-      << " '-' with vectors filled head linetype 0\n"
-      << q << "\ne\n"
-      << q << " " << (p / p.norm()) << "\ne\n";
+      << "set xrange [-20:20]\n"
+      << "set yrange [-20:20]\n"
+      // << "set xrange [" << (q(2) - 2.0) << ":" << (q(2) + 2.0) << "]\n"
+      // << "set yrange [" << (q(3) - 2.0) << ":" << (q(3) + 2.0) << "]\n"
+      << "set size square\n"
+      << "plot '-' with linespoints "
+      << "pointtype 7 pointsize 1 linewidth 2\n";
+  for (unsigned k = 0; k < nparticles; k++)
+    cmd << q(2 * k) << " " << q(2 * k + 1) << "\n";
+  cmd << "e\n";
+
   plotter.send(cmd.str());
+}
+
+double BAOAB::angle() const {
+  // Obtain the angle between the two atoms located at the extremes of
+  // the chain.
+  vec::fixed<2> v10;
+  v10(0) = q(0) - q(2);
+  v10(1) = q(1) - q(3);
+
+  vec::fixed<2> v12;
+  v12(0) = q(4) - q(2);
+  v12(1) = q(5) - q(3);
+
+  abort_unless(fabs(norm(v10, 2) - 1.0) < tol
+               && fabs(norm(v12, 2) - 1.0) < tol);
+
+  mat::fixed<2, 2> M;
+  M(0, 0) =  v10(0);
+  M(0, 1) = -v10(1);
+  M(1, 0) =  v10(1);
+  M(1, 1) =  v10(0);
+
+  vec::fixed<2> u = trans(M) * v12;
+
+  return atan2(u(1), u(0));
 }

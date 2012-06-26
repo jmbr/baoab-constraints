@@ -29,8 +29,13 @@ int main(int argc, char* argv[]) {
 
   for (unsigned k = 0; k < o.num_experiments; k++) {
     const double dt = dts[k];
-    experiments[k] = new Experiment(o.K, o.friction, o.temperature, dt,
-                                    o.total_time, seeds(rng), o.nbins, o.plot);
+    experiments[k] = new Experiment(o.friction,
+                                    o.temperature,
+                                    dt,
+                                    o.total_time,
+                                    seeds(rng),
+                                    o.nbins,
+                                    o.plot);
     experiments[k]->openFiles();
   }
 

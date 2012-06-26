@@ -17,15 +17,14 @@
 
 using std::vector;
 
-Histogram::Histogram(unsigned nbins_, double temperature_, double K_)
+Histogram::Histogram(unsigned nbins_, double temperature_)
     : nbins(nbins_), histogram(nbins), reference(nbins),
-      temperature(temperature_), K(K_) {
+      temperature(temperature_) {
   compute();
 }
 
 static double f(double theta, void* params) {
   const double temperature = *((double *) params);
-  const double K = *((double *) params + 1);
 
   double s, c;
 #ifdef _GNU_SOURCE
@@ -34,18 +33,13 @@ static double f(double theta, void* params) {
   s = sin(theta);
   c = cos(theta);
 #endif
-  const double D = sqrt(K) * c * c + s * s / sqrt(K);
 
-  const double r = sqrt(c * c / K + s * s);
-  const double d = 1.0, a = 2.0, r0 = 1.0;
+  const double r = sqrt((c - 1.0) * (c - 1.0) + s * s);
+  const double d = 1.0, a = 2.0, r0 = sqrt(2.0);
   const double exp_factor = (1.0 - exp(-a * (r - r0)));
   const double U = d * exp_factor * exp_factor;
 
-  // const double U = c * c * s / K;
-  // const double U = c * c * s * s / K;
-  // const double U = s;
-
-  return sqrt(D) * exp(-U / temperature);
+  return exp(-U / temperature);
 }
 
 void Histogram::compute() {
@@ -53,7 +47,7 @@ void Histogram::compute() {
 
   w = gsl_integration_workspace_alloc(10000);
 
-  double params[] = { temperature, K };
+  double params[] = { temperature };
 
   gsl_function F;
   F.function = &f;
@@ -92,6 +86,7 @@ void Histogram::compute() {
 
 unsigned long& Histogram::operator[](double theta) {
   const double a = -M_PI, b = M_PI;
+  // const double a = 0, b = M_PI;
   const double N = static_cast<double>(nbins);
   const double i = floor((theta - a) / (b - a) * N);
 
@@ -147,7 +142,7 @@ void Histogram::plot(Plotter& plotter) {
   const double order_error = log10(error());
 
   std::ostringstream cmd;
-  cmd << "set title 'O(Error) = " << order_error << "'\n"
+  cmd << "set title 'Base 10 logarithm of distance between reference and simulated histograms = " << order_error << "'\n"
       << "set xrange [-pi:pi]\n"
       << "set yrange [" << 0.0 << ":" << (maximum + minimum) << "]\n"
       << "plot '-' with linespoints pointtype 5"

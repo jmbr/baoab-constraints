@@ -10,7 +10,6 @@ int Options::parse(int argc, char* argv[]) {
   po::options_description desc("Allowed options");
   desc.add_options()
       ("help", "Display help information")
-      ("K", po::value<double>(), "Parameter that characterizes the ellipse")
       ("temperature", po::value<double>(), "Temperature")
       ("friction", po::value<double>(), "Friction coefficient")
       ("dt", po::value<double>(), "Time step length")
@@ -31,9 +30,6 @@ int Options::parse(int argc, char* argv[]) {
     std::cout << desc;
     return -1;
   }
-
-  if (varmap.count("K"))
-    K = varmap["K"].as<double>();
 
   if (varmap.count("temperature"))
     temperature = varmap["temperature"].as<double>();
@@ -70,7 +66,7 @@ int Options::parse(int argc, char* argv[]) {
 
   if (nbins <= 0 || total_time < 0
       || num_experiments < 1 || min_dt < 0
-      || friction < 0 || temperature < 0 || K < 0)
+      || friction < 0 || temperature < 0)
   {
     std::cerr << desc;
     return -1;
