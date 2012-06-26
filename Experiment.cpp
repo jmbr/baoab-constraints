@@ -81,8 +81,10 @@ void Experiment::closeFiles() {
   log.close();
   results.close();
 
-  plt1.close();
-  plt2.close();
+  if (plot) {
+    plt1.close();
+    plt2.close();
+  }
 
   files_are_open = false;
 }
