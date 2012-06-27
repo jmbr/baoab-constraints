@@ -36,7 +36,6 @@ set(LINK_SEARCH_END_STATIC "ON")
 
 add_library(baoab
   BAOAB.h BAOAB.cpp
-  BAOAB_with_RATTLE.cpp
   Plotter.h Plotter.cpp
   Histogram.h Histogram.cpp
   linspace.h

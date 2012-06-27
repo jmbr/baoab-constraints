@@ -31,20 +31,19 @@ class BAOAB {
   double temperature;
   double dt;
 
- protected:
+ private:
   double c1, c3;
   vec::fixed<2 * nparticles> f;
 
-  // boost::mt11213b rng;
   boost::mt19937 rng;
   boost::random::normal_distribution<double> normal;
 
  public:
   BAOAB() {}
 
-  BAOAB(double friction_,
-        double temperature_,
-        double dt_,
+  BAOAB(double friction,
+        double temperature,
+        double dt,
         unsigned seed);
 
   BAOAB& operator=(const BAOAB& other);
@@ -57,31 +56,14 @@ class BAOAB {
 
   void plot(Plotter& plotter);
 
- protected:
+ private:
   vec::fixed<nconstraints> g(const vec& r);
-
   mat::fixed<nconstraints, 2 * nparticles> G(const vec& r);
 
-  virtual void A() = 0;
+  void rattle(double h, unsigned max_iters = 1e7);
+  void A();
   void B();
   void O();
-};
-
-class BAOAB_with_RATTLE : public virtual BAOAB {
- public:
-  BAOAB_with_RATTLE() {}
-
-  BAOAB_with_RATTLE(double friction_,
-                    double temperature_,
-                    double dt_,
-                    unsigned seed)
-      : BAOAB(friction_, temperature_, dt_, seed) {}
-
- protected:
-  void A();
-
- private:
-  void rattle(double h, unsigned max_iters = 1e7);
 };
 
 #endif

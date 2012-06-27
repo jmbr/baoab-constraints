@@ -36,9 +36,7 @@ class Experiment {
   void compute_step();
 
  public:
-  BAOAB_with_RATTLE baoab;
-  // BAOAB_with_DoPri baoab;
-  // BAOAB_with_Rotation baoab;
+  BAOAB baoab;
   Histogram histogram;
   unsigned long long total_steps;
   bool plot;
