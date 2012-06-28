@@ -11,7 +11,7 @@
 
 #define abort_unless(expr) do {                                         \
     if (!(expr)) {                                                      \
-      std::fprintf(stderr, "%s:%u (%s): Assertion `%s' failed.",        \
+      std::fprintf(stderr, "%s:%u (%s): Assertion `%s' failed.\n",      \
                    __FILE__, __LINE__, __func__, __STRING(expr));       \
       std::fflush(stderr);                                              \
       abort();                                                          \
