@@ -4,7 +4,6 @@
 This is the source code for the numerical experiments of the constrained variant of BAOAB.
 
 ** Dependencies
-*** Boost (http://boost.org)
 *** GNU Scientific Library (http://www.gnu.org/software/gsl/)
 *** CMake (http://cmake.org)
 *** Armadillo (http://arma.sf.net)

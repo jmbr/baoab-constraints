@@ -4,12 +4,6 @@ enable_language(CXX C)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED OFF)
-set(Boost_USE_STATIC_RUNTIME ON)
-find_package(Boost REQUIRED program_options)
-include_directories(${Boost_INCLUDE_DIRS})
-
 find_package(GSL REQUIRED)
 include_directories(${GSL_INCLUDE_DIRS})
 
@@ -43,12 +37,12 @@ add_library(baoab
 
 add_executable(simul simul.cpp Options.cpp)
 target_link_libraries(simul baoab
-  ${Boost_LIBRARIES} ${GSL_LIBRARIES} ${ARMADILLO_LIBRARIES})
+ ${GSL_LIBRARIES} ${ARMADILLO_LIBRARIES})
 
 # enable_testing()
 # include_directories(${GTEST_INCLUDES})
 # add_executable(test-suite test-suite.cpp)
 # target_link_libraries(test-suite
-#   ${Boost_LIBRARIES} ${GSL_LIBRARIES} ${ARMADILLO_LIBRARIES}
+#   ${GSL_LIBRARIES} ${ARMADILLO_LIBRARIES}
 #   ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 # add_test(test-suite test-suite)

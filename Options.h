@@ -9,7 +9,7 @@ struct Options {
   double min_dt, max_dt;
   unsigned num_experiments;
   double total_time;
-  unsigned random_seed;
+  unsigned long random_seed;
   unsigned nbins;
   bool plot;
 
@@ -20,7 +20,7 @@ struct Options {
         max_dt(-1),
         num_experiments(0),
         total_time(-1),
-        random_seed(0),
+        random_seed(0UL),
         nbins(50),
         plot(false) {}
 
@@ -30,7 +30,7 @@ struct Options {
           double max_dt_,
           unsigned num_experiments_,
           double total_time_,
-          unsigned random_seed_,
+          unsigned long random_seed_,
           unsigned nbins_,
           bool plot_ = false)
       : temperature(temperature_),

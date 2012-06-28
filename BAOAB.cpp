@@ -1,18 +1,21 @@
 #include <iostream>
 #include <sstream>
 
+#include <gsl/gsl_randist.h>
+
 #include "BAOAB.h"
 #include "Plotter.h"
 #include "abort_unless.h"
 
 BAOAB::BAOAB(double friction_, double temperature_,
-             double dt_, unsigned seed)
+             double dt_, unsigned long seed)
     : friction(friction_),
       temperature(temperature_),
       dt(dt_),
       c1(exp(-friction * dt)),
       c3(sqrt(temperature * (1.0 - c1 * c1))) {
-  rng.seed(seed);
+  rng = gsl_rng_alloc(gsl_rng_mt19937);
+  gsl_rng_set(rng, seed);
 
   // Set up initial conditions (must satisfy the constraints).
   q(0) = 1.0; q(1) = 0.0;
@@ -22,7 +25,11 @@ BAOAB::BAOAB(double friction_, double temperature_,
   abort_unless(norm(g(q), "inf") < tol
                && norm(G(q) * p, "inf") < tol);
 
-  computeForce();
+  compute_force();
+}
+
+BAOAB::~BAOAB() {
+  gsl_rng_free(rng);
 }
 
 BAOAB& BAOAB::operator=(const BAOAB& other) {
@@ -35,13 +42,13 @@ BAOAB& BAOAB::operator=(const BAOAB& other) {
     c1 = exp(-friction * dt);
     c3 = sqrt(temperature * (1.0 - c1 * c1));
     f = other.f;
-    rng = other.rng;
+    gsl_rng_memcpy(rng, other.rng);
   }
 
   return *this;
 }
 
-void BAOAB::computeForce() {
+void BAOAB::compute_force() {
   // If you change sth here, remember to change the histogram routine.
   const double d = 1.0, a = 2.0, r0 = sqrt(2.0);
 
@@ -65,7 +72,6 @@ void BAOAB::computeForce() {
 
 vec::fixed<nconstraints> BAOAB::g(const vec& r) {
   vec::fixed<nconstraints> v;
-  v.zeros();
 
   for (unsigned i = 0; i < nconstraints; i++) {
     vec::fixed<2> u;
@@ -84,7 +90,7 @@ mat::fixed<nconstraints, 2 * nparticles> BAOAB::G(const vec& r) {
   for (unsigned i = 0; i < nconstraints; i++) {
     vec::fixed<2> u;
 
-    u(0) = r(2 * i)     - r(2 * i + 2);
+    u(0) = r(2 * i) - r(2 * i + 2);
     u(1) = r(2 * i + 1) - r(2 * i + 3);
 
     m(i, 2 * i)     =  u(0);
@@ -96,12 +102,12 @@ mat::fixed<nconstraints, 2 * nparticles> BAOAB::G(const vec& r) {
   return m;
 }
 
-void BAOAB::operator()() {
+void BAOAB::advance() {
   B();
   A();
   O();
   A();
-  computeForce();
+  compute_force();
   B();
 }
 
@@ -121,7 +127,7 @@ void BAOAB::B() {
 void BAOAB::O() {
   vec::fixed<2 * nparticles> R;
   for (vec::iterator r = R.begin(); r != R.end(); ++r)
-    *r = normal(rng);
+    *r = gsl_ran_gaussian(rng, 1.0);
 
   const mat::fixed<nconstraints, 2 * nparticles> Gq = G(q);
   const vec::fixed<nconstraints> b = friction * c3 / (1.0 - c1) * G(q) * R;

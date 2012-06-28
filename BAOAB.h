@@ -4,7 +4,7 @@
 #include <iostream>
 #include <exception>
 
-#include <boost/random.hpp>
+#include <gsl/gsl_rng.h>
 
 #include <armadillo>
 
@@ -35,8 +35,7 @@ class BAOAB {
   double c1, c3;
   vec::fixed<2 * nparticles> f;
 
-  boost::mt19937 rng;
-  boost::random::normal_distribution<double> normal;
+  gsl_rng* rng;
 
  public:
   BAOAB() {}
@@ -44,24 +43,25 @@ class BAOAB {
   BAOAB(double friction,
         double temperature,
         double dt,
-        unsigned seed);
+        unsigned long seed);
+
+  ~BAOAB();
 
   BAOAB& operator=(const BAOAB& other);
 
+  void advance();
+
   double angle() const;
-
-  void computeForce();
-
-  void operator()();
 
   void plot(Plotter& plotter);
 
  private:
-  vec::fixed<nconstraints> g(const vec& r);
-  mat::fixed<nconstraints, 2 * nparticles> G(const vec& r);
+  static vec::fixed<nconstraints> g(const vec& r);
+  static mat::fixed<nconstraints, 2 * nparticles> G(const vec& r);
 
   void rattle(double h, unsigned max_iters = 1e7);
   void A();
+  void compute_force();
   void B();
   void O();
 };

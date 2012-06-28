@@ -4,7 +4,7 @@
 #include <limits>
 #include <iostream>
 
-#include <boost/random.hpp>
+#include <gsl/gsl_rng.h>
 
 #include "Options.h"
 #include "Experiment.h"
@@ -20,12 +20,11 @@ int main(int argc, char* argv[]) {
   ///////////////////////////////////////////////////////////////////////////
   // Set up experiments.
   ///////////////////////////////////////////////////////////////////////////
-  boost::mt19937 rng(o.random_seed);
-  const unsigned max_seed = numeric_limits<unsigned>::max();
-  boost::random::uniform_int_distribution<unsigned> seeds(0, max_seed);
-
   vector<Experiment*> experiments(o.num_experiments);
   vector<double> dts = linspace<double>(o.min_dt, o.max_dt, o.num_experiments);
+
+  gsl_rng* rng = gsl_rng_alloc(gsl_rng_mt19937);
+  gsl_rng_set(rng, o.random_seed);
 
   for (unsigned k = 0; k < o.num_experiments; k++) {
     const double dt = dts[k];
@@ -33,7 +32,7 @@ int main(int argc, char* argv[]) {
                                     o.temperature,
                                     dt,
                                     o.total_time,
-                                    seeds(rng),
+                                    gsl_rng_get(rng),
                                     o.nbins,
                                     o.plot);
     experiments[k]->openFiles();
@@ -62,5 +61,6 @@ int main(int argc, char* argv[]) {
     delete experiments[k];
   }
 
+  gsl_rng_free(rng);
   return EXIT_SUCCESS;
 }

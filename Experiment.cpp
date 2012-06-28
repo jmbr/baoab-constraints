@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 
@@ -15,7 +16,7 @@ Experiment::Experiment(double friction,
                        double temperature,
                        double dt_,
                        double total_time,
-                       unsigned random_seed,
+                       unsigned long random_seed,
                        unsigned nbins,
                        bool plot_)
     : baoab(friction, temperature, dt_, random_seed),
@@ -92,14 +93,14 @@ void Experiment::closeFiles() {
   files_are_open = false;
 }
 
-void Experiment::compute_step() {
-  baoab();
+void Experiment::advance() {
+  baoab.advance();
   ++histogram[baoab.angle()];
 }
 
 void Experiment::simulate() {
   for (size_t step = 1; step <= total_steps; step++) {
-    compute_step();
+    advance();
 
     if (step % static_cast<size_t>(1e5) == 0 || step == total_steps) {
       if (plot) {

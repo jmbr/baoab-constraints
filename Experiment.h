@@ -17,7 +17,7 @@ class Experiment {
              double temperature,
              double dt,
              double time,
-             unsigned random_seed,
+             unsigned long random_seed,
              unsigned nbins,
              bool plot = false);
 
@@ -33,7 +33,7 @@ class Experiment {
   void simulate();
 
  private:
-  void compute_step();
+  void advance();
 
  public:
   BAOAB baoab;
