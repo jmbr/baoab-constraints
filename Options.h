@@ -10,7 +10,6 @@ struct Options {
   unsigned num_experiments;
   double total_time;
   unsigned long random_seed;
-  unsigned nbins;
   bool plot;
 
   Options()
@@ -21,7 +20,6 @@ struct Options {
         num_experiments(0),
         total_time(-1),
         random_seed(0UL),
-        nbins(50),
         plot(false) {}
 
   Options(double temperature_,
@@ -31,7 +29,6 @@ struct Options {
           unsigned num_experiments_,
           double total_time_,
           unsigned long random_seed_,
-          unsigned nbins_,
           bool plot_ = false)
       : temperature(temperature_),
         friction(friction_),
@@ -40,7 +37,6 @@ struct Options {
         num_experiments(num_experiments_),
         total_time(total_time_),
         random_seed(random_seed_),
-        nbins(nbins_),
         plot(plot_) {}
 
   int parse(int argc, char* argv[]);

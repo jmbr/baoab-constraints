@@ -6,7 +6,7 @@
 #include <fstream>
 
 #include "BAOAB.h"
-#include "Histogram.h"
+#include "Average.h"
 #include "Plotter.h"
 
 class Experiment {
@@ -18,7 +18,6 @@ class Experiment {
              double dt,
              double time,
              unsigned long random_seed,
-             unsigned nbins,
              bool plot = false);
 
   Experiment(const Experiment& e);
@@ -37,7 +36,7 @@ class Experiment {
 
  public:
   BAOAB baoab;
-  Histogram histogram;
+  Average average;
   unsigned long long total_steps;
   bool plot;
   Plotter plt1, plt2;

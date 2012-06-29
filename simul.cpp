@@ -33,7 +33,6 @@ int main(int argc, char* argv[]) {
                                     dt,
                                     o.total_time,
                                     gsl_rng_get(rng),
-                                    o.nbins,
                                     o.plot);
     experiments[k]->openFiles();
   }

@@ -17,10 +17,8 @@ Experiment::Experiment(double friction,
                        double dt_,
                        double total_time,
                        unsigned long random_seed,
-                       unsigned nbins,
                        bool plot_)
     : baoab(friction, temperature, dt_, random_seed),
-      histogram(nbins, temperature),
       total_steps(static_cast<unsigned long long>(ceil(total_time / dt_))),
       plot(plot_),
       files_are_open(false) {}
@@ -33,7 +31,7 @@ Experiment::~Experiment() {
 Experiment& Experiment::operator=(const Experiment& other) {
   if (this != &other) {
     baoab = other.baoab;
-    histogram = other.histogram;
+    average = other.average;
     total_steps = other.total_steps;
     plot = other.plot;
   }
@@ -70,7 +68,6 @@ void Experiment::openFiles() {
       << "friction = " << baoab.friction << ", "
       << "time step length = " << dt << ", "
       << "total steps = " << total_steps << ", "
-      << "number of bins in histogram = " << histogram.size()
       << std::endl;
 
   if (plot) {
@@ -93,29 +90,25 @@ void Experiment::closeFiles() {
   files_are_open = false;
 }
 
-void Experiment::advance() {
-  baoab.advance();
-  ++histogram[baoab.angle()];
-}
-
 void Experiment::simulate() {
   for (size_t step = 1; step <= total_steps; step++) {
-    advance();
+    baoab.advance();
 
-    if (step % static_cast<size_t>(1e5) == 0 || step == total_steps) {
-      if (plot) {
-        histogram.plot(plt1);
-        // baoab.plot(plt2);
-      }
+    average.update(baoab.end_to_end_distance());
+
+    if (step % static_cast<size_t>(1e4) == 0 || step == total_steps) {
+      // if (plot) {
+      //   baoab.plot(plt2);
+      // }
 
       const double t = static_cast<double>(step) * baoab.dt;
 
       log << t << " "
           << trans(baoab.q) << " "
           << trans(baoab.p) << "\n\n"
-          << histogram << std::endl;
+          << std::endl;
 
-      results << t << " " << histogram.error() << std::endl;
+      results << t << " " << average() << std::endl;
     }
   }
 }

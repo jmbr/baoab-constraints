@@ -18,7 +18,6 @@ static void print_help_message() {
             << " --number arg          Number of experiments\n"
             << " --time arg            Instant when the simulation stops\n"
             << " --seed arg            Seed for the random number generator\n"
-            << " --bins arg            Number of bins in histogram\n"
             << " --plot                Plot results"
             << std::endl;
 }
@@ -33,7 +32,6 @@ enum options {
   opt_number,
   opt_time,
   opt_seed,
-  opt_bins,
   opt_plot
 };
 
@@ -52,7 +50,6 @@ int Options::parse(int argc, char* argv[]) {
       {"number", required_argument, 0, opt_number},
       {"time", required_argument, 0, opt_time},
       {"seed", required_argument, 0, opt_seed},
-      {"bins", required_argument, 0, opt_bins},
       {"plot", no_argument, 0, opt_plot},
       {0, 0, 0, 0}
     };
@@ -92,9 +89,6 @@ int Options::parse(int argc, char* argv[]) {
       case opt_seed:
         random_seed = strtoul(optarg, 0, 10);
         break;
-      case opt_bins:
-        nbins = atoi(optarg);
-        break;
       case opt_plot:
         plot = true;
         break;
@@ -105,8 +99,8 @@ int Options::parse(int argc, char* argv[]) {
     }
   }
 
-  if (nbins <= 0 || total_time < 0
-      || num_experiments < 1 || min_dt < 0
+  if (total_time < 0 || num_experiments < 1
+      || min_dt < 0 || max_dt < 0
       || friction < 0 || temperature < 0)
   {
     std::cerr << "Not enough parameters specified. "

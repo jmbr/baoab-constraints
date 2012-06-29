@@ -53,6 +53,8 @@ class BAOAB {
 
   double angle() const;
 
+  double end_to_end_distance() const;
+
   void plot(Plotter& plotter);
 
  private:

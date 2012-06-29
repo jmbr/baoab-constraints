@@ -120,8 +120,7 @@ void BAOAB::B() {
 
   // std::cout << __func__ << ": p = " << trans(p);
 
-  abort_unless(norm(g(q), "inf") < tol
-               && norm(G(q) * p, "inf") < tol);
+  abort_unless(norm(G(q) * p, "inf") < tol);
 }
 
 void BAOAB::O() {
@@ -137,8 +136,7 @@ void BAOAB::O() {
 
   // std::cout << __func__ << ": p = " << trans(p);
 
-  abort_unless(norm(g(q), "inf") < tol
-               && norm(G(q) * p, "inf") < tol);
+  abort_unless(norm(G(q) * p, "inf") < tol);
 }
 
 void BAOAB::A() {
@@ -192,13 +190,13 @@ void BAOAB::plot(Plotter& plotter) {
   std::ostringstream cmd;
   cmd << "unset key\n"
       << "set samples 1000\n"
-      << "set xrange [-20:20]\n"
-      << "set yrange [-20:20]\n"
-      // << "set xrange [" << (q(2) - 2.0) << ":" << (q(2) + 2.0) << "]\n"
-      // << "set yrange [" << (q(3) - 2.0) << ":" << (q(3) + 2.0) << "]\n"
+      // << "set xrange [-20:20]\n"
+      // << "set yrange [-20:20]\n"
+      << "set xrange [" << (q(2) - 2.0) << ":" << (q(2) + 2.0) << "]\n"
+      << "set yrange [" << (q(3) - 2.0) << ":" << (q(3) + 2.0) << "]\n"
       << "set size square\n"
       << "plot '-' with linespoints "
-      << "pointtype 7 pointsize 1 linewidth 2\n";
+      << "pointtype 7 pointsize 3 linewidth 2\n";
   for (unsigned k = 0; k < nparticles; k++)
     cmd << q(2 * k) << " " << q(2 * k + 1) << "\n";
   cmd << "e\n";
@@ -229,4 +227,12 @@ double BAOAB::angle() const {
   vec::fixed<2> u = trans(M) * v12;
 
   return atan2(u(1), u(0));
+}
+
+double BAOAB::end_to_end_distance() const {
+  vec::fixed<2> v03;
+  v03(0) = q(0) - q(4);
+  v03(1) = q(1) - q(5);
+
+  return norm(v03, 2);
 }
