@@ -7,6 +7,9 @@
 #include "Plotter.h"
 #include "abort_unless.h"
 
+static const mat::fixed<2 * nparticles, 2 * nparticles> id =
+    eye<mat>(2 * nparticles, 2 * nparticles);
+
 BAOAB::BAOAB(double friction_, double temperature_,
              double dt_, unsigned long seed)
     : friction(friction_),
@@ -111,30 +114,29 @@ void BAOAB::advance() {
   B();
 }
 
-void BAOAB::B() {
+void BAOAB::project(const Vector& q, Vector& v) {
+  // Project v onto the tangent space of the manifold { x | g(x) = 0 }
+  // at the point q.
+
   const mat::fixed<nconstraints, 2 * nparticles> Gq = G(q);
-  const vec::fixed<nconstraints> b = Gq * (2.0 / dt * p + f);
-  const vec::fixed<nconstraints> mu = solve(Gq * trans(Gq), b);
 
-  p += dt / 2.0 * (f - trans(Gq) * mu);
+  v = (id - trans(Gq) * inv(Gq * trans(Gq)) * Gq) * v;
+}
 
-  // std::cout << __func__ << ": p = " << trans(p);
+void BAOAB::B() {
+  p += dt / 2.0 * f;
+  project(q, p);
 
   abort_unless(norm(G(q) * p, "inf") < tol);
 }
 
 void BAOAB::O() {
-  vec::fixed<2 * nparticles> R;
+  Vector R;
   for (vec::iterator r = R.begin(); r != R.end(); ++r)
     *r = gsl_ran_gaussian(rng, 1.0);
 
-  const mat::fixed<nconstraints, 2 * nparticles> Gq = G(q);
-  const vec::fixed<nconstraints> b = friction * c3 / (1.0 - c1) * G(q) * R;
-  const vec::fixed<nconstraints> mu = solve(Gq * trans(Gq), b);
-
-  p = -(1.0 - c1) / friction * trans(Gq) * mu + c1 * p + c3 * R;
-
-  // std::cout << __func__ << ": p = " << trans(p);
+  project(q, R);
+  p = c1 * p + c3 * R;
 
   abort_unless(norm(G(q) * p, "inf") < tol);
 }
@@ -163,7 +165,7 @@ void BAOAB::rattle(double h, unsigned max_iters) {
     if (k == max_iters)
       throw BAOAB_did_not_converge();
 
-    const vec::fixed<2 * nparticles> r = q - trans(Gqprev) * lambda_r;
+    const Vector r = q - trans(Gqprev) * lambda_r;
     const vec::fixed<nconstraints> phi = g(r);
     const mat::fixed<nconstraints, nconstraints> dphi_dl = -G(r) * trans(Gqprev);
     const vec::fixed<nconstraints> update = solve(dphi_dl, phi);
@@ -178,9 +180,7 @@ void BAOAB::rattle(double h, unsigned max_iters) {
   p -= trans(Gqprev) * lambda_r / h;
 
   // Deal with the constraint on the tangent space.
-  const mat::fixed<nconstraints, 2 * nparticles> Gq = G(q);
-  const vec::fixed<nconstraints> lambda_v = solve(Gq * trans(Gq), Gq * p);
-  p -= trans(Gq) * lambda_v;
+  project(q, p);
 
   abort_unless(norm(g(q), "inf") < tol
                && norm(G(q) * p, "inf") < tol);
