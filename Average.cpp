@@ -13,7 +13,7 @@ void Average::update(double input) {
   sum = t;
 }
 
-long double Average::operator()() const {
+long double Average::value() const {
   assert(count > 0);
   return sum / static_cast<long double>(count);
 }

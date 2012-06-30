@@ -7,7 +7,7 @@ class Average {
 
   void update(double input);
 
-  long double operator()() const;
+  long double value() const;
 
  private:
   unsigned long long count;

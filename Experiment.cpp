@@ -108,7 +108,7 @@ void Experiment::simulate() {
           << trans(baoab.p) << "\n\n"
           << std::endl;
 
-      results << t << " " << average() << std::endl;
+      results << t << " " << average.value() << std::endl;
     }
   }
 }
