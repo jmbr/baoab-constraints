@@ -6,6 +6,9 @@
 #include <fstream>
 #include <sstream>
 
+#include "BAOAB.h"
+#include "Average.h"
+#include "Plotter.h"
 #include "Experiment.h"
 
 

@@ -7,6 +7,9 @@
 #include <gsl/gsl_rng.h>
 
 #include "Options.h"
+#include "BAOAB.h"
+#include "Average.h"
+#include "Plotter.h"
 #include "Experiment.h"
 #include "linspace.h"
 

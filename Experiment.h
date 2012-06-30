@@ -5,9 +5,9 @@
 
 #include <fstream>
 
-#include "BAOAB.h"
-#include "Average.h"
-#include "Plotter.h"
+class BAOAB;
+class Average;
+class Plotter;
 
 class Experiment {
  public:
