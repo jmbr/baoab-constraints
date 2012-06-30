@@ -39,7 +39,7 @@ class Experiment {
   Average average;
   unsigned long long total_steps;
   bool plot;
-  Plotter plt1, plt2;
+  Plotter plt;
 
  private:
   bool files_are_open;

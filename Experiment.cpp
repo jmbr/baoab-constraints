@@ -70,10 +70,8 @@ void Experiment::openFiles() {
       << "total steps = " << total_steps << ", "
       << std::endl;
 
-  if (plot) {
-    plt1.open();
-    plt2.open();
-  }
+  if (plot)
+    plt.open();
 
   files_are_open = true;
 }
@@ -82,10 +80,8 @@ void Experiment::closeFiles() {
   log.close();
   results.close();
 
-  if (plot) {
-    plt1.close();
-    plt2.close();
-  }
+  if (plot)
+    plt.close();
 
   files_are_open = false;
 }
@@ -96,10 +92,9 @@ void Experiment::simulate() {
 
     average.update(baoab.end_to_end_distance());
 
-    if (step % static_cast<size_t>(1e4) == 0 || step == total_steps) {
-      // if (plot) {
-      //   baoab.plot(plt2);
-      // }
+    if (step % static_cast<size_t>(1e5) == 0 || step == total_steps) {
+      if (plot)
+        baoab.plot(plt);
 
       const double t = static_cast<double>(step) * baoab.dt;
 

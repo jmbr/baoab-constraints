@@ -69,8 +69,6 @@ void BAOAB::compute_force() {
   f(3) =  0.0;
   f(4) =  morse_factor * v(0);
   f(5) =  morse_factor * v(1);
-
-  // std::cout << __func__ << ": " << trans(f) << std::endl;
 }
 
 vec::fixed<nconstraints> BAOAB::g(const vec& r) {
@@ -190,8 +188,6 @@ void BAOAB::plot(Plotter& plotter) {
   std::ostringstream cmd;
   cmd << "unset key\n"
       << "set samples 1000\n"
-      // << "set xrange [-20:20]\n"
-      // << "set yrange [-20:20]\n"
       << "set xrange [" << (q(2) - 2.0) << ":" << (q(2) + 2.0) << "]\n"
       << "set yrange [" << (q(3) - 2.0) << ":" << (q(3) + 2.0) << "]\n"
       << "set size square\n"
@@ -202,31 +198,6 @@ void BAOAB::plot(Plotter& plotter) {
   cmd << "e\n";
 
   plotter.send(cmd.str());
-}
-
-double BAOAB::angle() const {
-  // Obtain the angle between the two atoms located at the extremes of
-  // the chain.
-  vec::fixed<2> v10;
-  v10(0) = q(0) - q(2);
-  v10(1) = q(1) - q(3);
-
-  vec::fixed<2> v12;
-  v12(0) = q(4) - q(2);
-  v12(1) = q(5) - q(3);
-
-  abort_unless(fabs(norm(v10, 2) - 1.0) < tol
-               && fabs(norm(v12, 2) - 1.0) < tol);
-
-  mat::fixed<2, 2> M;
-  M(0, 0) =  v10(0);
-  M(0, 1) = -v10(1);
-  M(1, 0) =  v10(1);
-  M(1, 1) =  v10(0);
-
-  vec::fixed<2> u = trans(M) * v12;
-
-  return atan2(u(1), u(0));
 }
 
 double BAOAB::end_to_end_distance() const {
