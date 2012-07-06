@@ -172,12 +172,13 @@ void BAOAB::rattle(double h, unsigned max_iters) {
 }
 
 void BAOAB::plot(Plotter& plotter) {
+  const double I = 5.0;
   std::ostringstream cmd;
   cmd << "unset key\n"
-      << "set samples 1000\n"
-      << "set title 'Potential = " << pot << ", end-to-end distance " << end_to_end_distance() << "'\n"
-      << "set xrange [" << (q(2*3+0) - 5.0) << ":" << (q(2*3+0) + 5.0) << "]\n"
-      << "set yrange [" << (q(2*3+1) - 5.0) << ":" << (q(2*3+1) + 5.0) << "]\n"
+      << "set title 'Potential = " << pot
+      << ", end-to-end distance " << end_to_end_distance() << "'\n"
+      << "set xrange [" << (q(2*3+0) - I) << ":" << (q(2*3+0) + I) << "]\n"
+      << "set yrange [" << (q(2*3+1) - I) << ":" << (q(2*3+1) + I) << "]\n"
       << "set size square\n"
       << "plot '-' with linespoints "
       << "pointtype 7 pointsize 3 linewidth 2\n";

@@ -7,7 +7,7 @@ class Force {
  public:
   Force() : pot(0.0) {}
 
-  const Vector& operator()(const Vector& q, double* potential = nullptr);
+  const Vector& operator()(const Vector& q, double* potential = 0);
   
  private:
   double pot;

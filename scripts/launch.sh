@@ -1,16 +1,23 @@
 #!/bin/sh
 
-K=0.75
 temperature=0.05
-min_dt=0.3
-max_dt=0.75
+friction=1e4
+min_dt=0.08
+max_dt=0.15
 number=10
-time=1e11
-seed=2342
+equilibration_time=1e7
+production_time=1e11
+seed=$RANDOM
 
+echo "$seed" > random-seed.dat  # Save random seed.
+
+# Run simulation.
 echo "Running simulation (random seed = $seed)..."
-time ./simul --K $K --temperature $temperature \
-	     --min-dt $min_dt --max-dt $max_dt --number $number \
-	     --time $time --seed $seed
+time ./simul --temperature $temperature --friction $friction \
+             --min-dt $min_dt --max-dt $max_dt --number $number \
+             --equilibration $equilibration_time --time $production_time \
+             --seed $seed
+
+# Notify the user.
 echo "Simulation finished."
 xmessage -center "Simulation finished."

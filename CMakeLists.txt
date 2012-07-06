@@ -19,7 +19,7 @@ include_directories(${ARMADILLO_INCLUDE_DIRS})
 set(CXX_WARN_FLAGS "-W -Wall -Wextra -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -funroll-loops -march=native")
-set(CMAKE_CXX_FLAGS "-std=c++0x -ggdb3 ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-ggdb3 ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 add_library(baoab STATIC
   BAOAB.h BAOAB.cpp

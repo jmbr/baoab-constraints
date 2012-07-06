@@ -99,9 +99,10 @@ void Experiment::closeFiles() {
 void Experiment::simulate() {
   // Equilibrate
   for (size_t step = 1; step <= equilibration_steps; step++) {
-    if (step % size_t(1e4) == 0) {
-      const double t = double(step) * baoab.dt;
-      log << "Equilibrating (" << t << "/" << equilibration_steps << ")"
+    if (step % size_t(1e5) == 0) {
+      log << "Running equilibraton phase ("
+          << floor(double(step) / double(equilibration_steps) * 100.0)
+          << "% completed)."
           << std::endl;
     }
 
@@ -109,6 +110,7 @@ void Experiment::simulate() {
   }
 
   // Do production simulation
+  log << "Running production simulation." << std::endl;
   for (size_t step = 1; step <= production_steps; step++) {
     baoab.advance();
 
