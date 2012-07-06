@@ -16,7 +16,8 @@ class Experiment {
   Experiment(double friction,
              double temperature,
              double dt,
-             double time,
+             double equilibration_time,
+             double production_time,
              unsigned long random_seed,
              bool plot = false);
 
@@ -36,8 +37,10 @@ class Experiment {
 
  public:
   BAOAB baoab;
-  Average average;
-  unsigned long long total_steps;
+  Average end_to_end;
+  Average potential;
+  unsigned long equilibration_steps;
+  unsigned long long production_steps;
   bool plot;
   Plotter plt;
 

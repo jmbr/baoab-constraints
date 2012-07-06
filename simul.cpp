@@ -34,7 +34,8 @@ int main(int argc, char* argv[]) {
     experiments[k] = new Experiment(o.friction,
                                     o.temperature,
                                     dt,
-                                    o.total_time,
+                                    o.equilibration_time,
+                                    o.production_time,
                                     gsl_rng_get(rng),
                                     o.plot);
     experiments[k]->openFiles();

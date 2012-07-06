@@ -8,16 +8,14 @@
 
 #include <armadillo>
 
+#include "Misc.h"
+#include "Force.h"
+
 using namespace arma;
 
 const double tol = 1e-12;
 
-const unsigned nparticles = 3;                // # of particles
-const unsigned nconstraints = nparticles - 1; // # of constraints
-
 class Plotter;
-
-typedef vec::fixed<2 * nparticles> Vector;
 
 class BAOAB_did_not_converge : public std::exception {
  public:
@@ -35,7 +33,10 @@ class BAOAB {
 
  private:
   double c1, c3;
+
+  Force force;
   Vector f;
+  double pot;
 
   gsl_rng* rng;
 
@@ -57,16 +58,17 @@ class BAOAB {
 
   double end_to_end_distance() const;
 
+  double potential() const;
+
   void plot(Plotter& plotter);
 
  private:
-  static vec::fixed<nconstraints> g(const vec& r);
-  static mat::fixed<nconstraints, 2 * nparticles> G(const vec& r);
+  static vec::fixed<nconstraints> g(const Vector& r);
+  static mat::fixed<nconstraints, 2 * nparticles> G(const Vector& r);
   static void project(const Vector& q, Vector& v);
 
   void rattle(double h, unsigned max_iters = 5e7);
   void A();
-  void compute_force();
   void B();
   void O();
 };

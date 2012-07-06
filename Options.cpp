@@ -16,6 +16,7 @@ static void print_help_message() {
             << " --min-dt arg          Minimum time step length\n"
             << " --max-dt arg          Minimum time step length\n"
             << " --number arg          Number of experiments\n"
+            << " --equilibration arg   Instant when the equilibration stops\n"
             << " --time arg            Instant when the simulation stops\n"
             << " --seed arg            Seed for the random number generator\n"
             << " --plot                Plot results"
@@ -31,6 +32,7 @@ enum options {
   opt_max_dt,
   opt_number,
   opt_time,
+  opt_equi,
   opt_seed,
   opt_plot
 };
@@ -49,6 +51,7 @@ int Options::parse(int argc, char* argv[]) {
       {"max-dt", required_argument, 0, opt_max_dt},
       {"number", required_argument, 0, opt_number},
       {"time", required_argument, 0, opt_time},
+      {"equilibration", required_argument, 0, opt_equi},
       {"seed", required_argument, 0, opt_seed},
       {"plot", no_argument, 0, opt_plot},
       {0, 0, 0, 0}
@@ -83,8 +86,11 @@ int Options::parse(int argc, char* argv[]) {
       case opt_number:
         num_experiments = atoi(optarg);
         break;
+      case opt_equi:
+        equilibration_time = atof(optarg);
+        break;
       case opt_time:
-        total_time = atof(optarg);
+        production_time = atof(optarg);
         break;
       case opt_seed:
         random_seed = strtoul(optarg, 0, 10);
@@ -99,8 +105,8 @@ int Options::parse(int argc, char* argv[]) {
     }
   }
 
-  if (total_time < 0 || num_experiments < 1
-      || min_dt < 0 || max_dt < 0
+  if (equilibration_time < 0 || production_time < 0
+      || num_experiments < 1 || min_dt < 0 || max_dt < 0
       || friction < 0 || temperature < 0)
   {
     std::cerr << "Not enough parameters specified. "

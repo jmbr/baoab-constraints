@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <iostream>
 #include <sstream>
 
@@ -21,14 +23,15 @@ BAOAB::BAOAB(double friction_, double temperature_,
   gsl_rng_set(rng, seed);
 
   // Set up initial conditions (must satisfy the constraints).
-  q(0) = 1.0; q(1) = 0.0;
-  q(2) = 0.0; q(3) = 0.0;
-  q(4) =-1.0; q(5) = 0.0;
+  q.zeros();
+  p.zeros();
+  for (unsigned k = 0; k < nparticles; k++)
+    q(2*k) = double(k);
 
   abort_unless(norm(g(q), "inf") < tol
                && norm(G(q) * p, "inf") < tol);
 
-  compute_force();
+  f = force(q, &pot);
 }
 
 BAOAB::~BAOAB() {
@@ -51,53 +54,37 @@ BAOAB& BAOAB::operator=(const BAOAB& other) {
   return *this;
 }
 
-void BAOAB::compute_force() {
-  // If you change sth here, remember to change the histogram routine.
-  const double d = 1.0, a = 2.0, r0 = sqrt(2.0);
-
-  vec::fixed<2> v;
-  v(0) = q(0) - q(4);
-  v(1) = q(1) - q(5);
-
-  const double r = norm(v, 2);
-  const double w = exp(-a * (r - r0));
-  const double morse_factor = 2.0 * a * d * (w - w * w) / r;
-
-  f(0) = -morse_factor * v(0);
-  f(1) = -morse_factor * v(1);
-  f(2) =  0.0;
-  f(3) =  0.0;
-  f(4) =  morse_factor * v(0);
-  f(5) =  morse_factor * v(1);
-}
-
-vec::fixed<nconstraints> BAOAB::g(const vec& r) {
+vec::fixed<nconstraints> BAOAB::g(const Vector& r) {
   vec::fixed<nconstraints> v;
 
   for (unsigned i = 0; i < nconstraints; i++) {
+    const unsigned j = i + 1;
+
     vec::fixed<2> u;
-    u(0) = r(2 * i) - r(2 * i + 2);
-    u(1) = r(2 * i + 1) - r(2 * i + 3);
+    u(0) = r(2*i+0) - r(2*j+0);
+    u(1) = r(2*i+1) - r(2*j+1);
+
     v(i) = (dot(u, u) - 1.0) / 2.0;
   }
 
   return v;
 }
 
-mat::fixed<nconstraints, 2 * nparticles> BAOAB::G(const vec& r) {
+mat::fixed<nconstraints, 2 * nparticles> BAOAB::G(const Vector& r) {
   mat::fixed<nconstraints, 2 * nparticles> m;
   m.zeros();
 
   for (unsigned i = 0; i < nconstraints; i++) {
+    const unsigned j = i + 1;
+
     vec::fixed<2> u;
+    u(0) = r(2*i+0) - r(2*j+0);
+    u(1) = r(2*i+1) - r(2*j+1);
 
-    u(0) = r(2 * i) - r(2 * i + 2);
-    u(1) = r(2 * i + 1) - r(2 * i + 3);
-
-    m(i, 2 * i)     =  u(0);
-    m(i, 2 * i + 1) =  u(1);
-    m(i, 2 * i + 2) = -u(0);
-    m(i, 2 * i + 3) = -u(1);
+    m(i, 2*i+0) =  u(0);
+    m(i, 2*i+1) =  u(1);
+    m(i, 2*i+2) = -u(0);
+    m(i, 2*i+3) = -u(1);
   }
 
   return m;
@@ -108,7 +95,7 @@ void BAOAB::advance() {
   A();
   O();
   A();
-  compute_force();
+  f = force(q, &pot);
   B();
 }
 
@@ -188,8 +175,9 @@ void BAOAB::plot(Plotter& plotter) {
   std::ostringstream cmd;
   cmd << "unset key\n"
       << "set samples 1000\n"
-      << "set xrange [" << (q(2) - 2.0) << ":" << (q(2) + 2.0) << "]\n"
-      << "set yrange [" << (q(3) - 2.0) << ":" << (q(3) + 2.0) << "]\n"
+      << "set title 'Potential = " << pot << ", end-to-end distance " << end_to_end_distance() << "'\n"
+      << "set xrange [" << (q(2*3+0) - 5.0) << ":" << (q(2*3+0) + 5.0) << "]\n"
+      << "set yrange [" << (q(2*3+1) - 5.0) << ":" << (q(2*3+1) + 5.0) << "]\n"
       << "set size square\n"
       << "plot '-' with linespoints "
       << "pointtype 7 pointsize 3 linewidth 2\n";
@@ -201,9 +189,15 @@ void BAOAB::plot(Plotter& plotter) {
 }
 
 double BAOAB::end_to_end_distance() const {
-  vec::fixed<2> v03;
-  v03(0) = q(0) - q(4);
-  v03(1) = q(1) - q(5);
+  const unsigned i = 0, j = nparticles - 1;
 
-  return norm(v03, 2);
+  vec::fixed<2> v;
+  v(0) = q(2*i+0) - q(2*j+0);
+  v(1) = q(2*i+1) - q(2*j+1);
+
+  return norm(v, 2);
+}
+
+double BAOAB::potential() const {
+  return pot;
 }
