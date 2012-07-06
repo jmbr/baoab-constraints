@@ -90,6 +90,11 @@ void Experiment::closeFiles() {
 }
 
 void Experiment::simulate() {
+  // Equilibrate
+  for (size_t step = 1; step <= 5e7; step++)
+    baoab.advance();
+
+  // Do proper simulation
   for (size_t step = 1; step <= total_steps; step++) {
     baoab.advance();
 

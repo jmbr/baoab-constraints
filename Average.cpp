@@ -5,7 +5,8 @@
 Average::Average() : count(0ULL), sum(0.0), c(0.0) {}
 
 void Average::update(double input) {
-  // Implementation of Kahan summation.
+  // Implementation of Kahan summation (see
+  // http://en.wikipedia.org/wiki/Kahan_summation)
   ++count;
   long double y = input - c;
   const long double t = sum + y;
