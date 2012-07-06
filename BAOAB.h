@@ -54,7 +54,7 @@ class BAOAB {
 
   void advance();
 
-  double angle() const;
+  void center();
 
   double end_to_end_distance() const;
 

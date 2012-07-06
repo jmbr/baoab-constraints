@@ -11,7 +11,7 @@ find_package(GSL REQUIRED)
 include_directories(${GSL_INCLUDE_DIRS})
 
 find_package(Gnuplot)
-add_definitions(-DGNUPLOT_EXECUTABLE="${GNUPLOT_EXECUTABLE}")
+add_definitions(-DGNUPLOT_EXECUTABLE="${GNUPLOT_EXECUTABLE}" -D_GNU_SOURCE)
 
 find_package(Armadillo)
 include_directories(${ARMADILLO_INCLUDE_DIRS})
@@ -32,3 +32,6 @@ add_library(baoab STATIC
 
 add_executable(simul simul.cpp Options.cpp)
 target_link_libraries(simul baoab ${GSL_LIBRARIES} ${ARMADILLO_LIBRARIES})
+
+add_executable(integration integration.cpp integrands.c)
+target_link_libraries(integration ${GSL_LIBRARIES})

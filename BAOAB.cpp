@@ -202,3 +202,20 @@ double BAOAB::end_to_end_distance() const {
 double BAOAB::potential() const {
   return pot;
 }
+
+void BAOAB::center() {
+  vec::fixed<2> c = zeros<vec>(2);
+
+  unsigned k;
+  const double n = double(nparticles);
+
+  for (k = 0; k < nparticles; k++) {
+    c(0) += q(2*k+0) / n;
+    c(1) += q(2*k+1) / n;
+  }
+
+  for (k = 0; k < nparticles; k++) {
+    q(2*k+0) -= c(0);
+    q(2*k+1) -= c(1);
+  }
+}

@@ -43,6 +43,7 @@ class Experiment {
   unsigned long long production_steps;
   bool plot;
   Plotter plt;
+  unsigned long random_seed;
 
  private:
   bool files_are_open;

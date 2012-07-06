@@ -12,7 +12,7 @@ static const double interactions_table[8 * 7] = { // The 8 is for alignment purp
   1.000000, 1.732051, 2.000000, 1.000000, 1.732051, 1.000000, 0.000000, 0.000000,
 };
 
-static inline size_t idx(size_t i, size_t j) { return 8*i+j; }
+static inline unsigned idx(unsigned i, unsigned j) { return 8*i+j; }
 
 void Force::compute_force_morse(const Vector& q, unsigned i, unsigned j) {
   assert(j - i > 1);

@@ -22,12 +22,13 @@ Experiment::Experiment(double friction,
                        double dt_,
                        double equilibration_time,
                        double production_time,
-                       unsigned long random_seed,
+                       unsigned long random_seed_,
                        bool plot_)
     : baoab(friction, temperature, dt_, random_seed),
       equilibration_steps(long(ceil(equilibration_time / dt_))),
       production_steps(long(ceil(production_time / dt_))),
       plot(plot_),
+      random_seed(random_seed_),
       files_are_open(false) {}
 
 Experiment::~Experiment() {
@@ -78,6 +79,7 @@ void Experiment::openFiles() {
       << "time step length = " << dt << ", "
       << "equilibration steps = " << equilibration_steps << ", "
       << "production steps = " << production_steps << ", "
+      << "random seed = " << random_seed
       << std::endl;
 
   if (plot)
@@ -97,9 +99,11 @@ void Experiment::closeFiles() {
 }
 
 void Experiment::simulate() {
+  size_t update_interval = size_t(1e5);
+
   // Equilibrate
   for (size_t step = 1; step <= equilibration_steps; step++) {
-    if (step % size_t(1e5) == 0) {
+    if (step % update_interval == 0) {
       log << "Running equilibraton phase ("
           << floor(double(step) / double(equilibration_steps) * 100.0)
           << "% completed)."
@@ -118,7 +122,10 @@ void Experiment::simulate() {
     end_to_end.update(baoab.end_to_end_distance());
     potential.update(baoab.potential());
 
-    if (step % size_t(1e4) == 0 || step == 1 || step == production_steps) {
+    if (step % update_interval == 0
+        || step == 1 || step == production_steps) {
+      baoab.center();
+
       if (plot)
         baoab.plot(plt);
 

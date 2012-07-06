@@ -1,11 +1,11 @@
 #!/bin/sh
 
-temperature=0.05
+temperature=0.5
 friction=1e4
 min_dt=0.08
 max_dt=0.15
 number=10
-equilibration_time=1e7
+equilibration_time=1e5
 production_time=1e11
 seed=$RANDOM
 
