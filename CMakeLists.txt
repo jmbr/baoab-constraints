@@ -5,6 +5,8 @@ enable_language(CXX C)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+include_directories(${PROJECT_SOURCE_DIR}/contrib/cubature)
+
 find_package(OpenMP)
 
 find_package(GSL REQUIRED)
@@ -33,5 +35,9 @@ add_library(baoab STATIC
 add_executable(simul simul.cpp Options.cpp)
 target_link_libraries(simul baoab ${GSL_LIBRARIES} ${ARMADILLO_LIBRARIES})
 
-add_executable(integration integration.cpp integrands.c)
-target_link_libraries(integration ${GSL_LIBRARIES})
+add_executable(integration-montecarlo integration-montecarlo.cpp integrands.c)
+target_link_libraries(integration-montecarlo ${GSL_LIBRARIES})
+
+add_executable(integration-cubature integration-cubature.cpp integrands.c
+  ${PROJECT_SOURCE_DIR}/contrib/cubature/cubature.c)
+target_link_libraries(integration-cubature -lm)
