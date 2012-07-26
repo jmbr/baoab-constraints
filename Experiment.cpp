@@ -91,8 +91,13 @@ void Experiment::closeFiles() {
 
 void Experiment::simulate() {
   // Equilibrate
-  for (size_t step = 1; step <= 5e7; step++)
+  for (size_t step = 1; step <= 1e8; step++) {
     baoab.advance();
+
+    if (step % size_t(1e6) == 0)
+      log << step << " (equilibration) "
+          << std::endl;
+  }
 
   // Do proper simulation
   for (size_t step = 1; step <= total_steps; step++) {
@@ -100,15 +105,15 @@ void Experiment::simulate() {
 
     average.update(baoab.end_to_end_distance());
 
-    if (step % static_cast<size_t>(1e5) == 0 || step == total_steps) {
+    if (step % size_t(1e5) == 0 || step == total_steps) {
       if (plot)
         baoab.plot(plt);
 
-      const double t = static_cast<double>(step) * baoab.dt;
+      const double t = double(step) * baoab.dt;
 
       log << t << " "
           << trans(baoab.q) << " "
-          << trans(baoab.p) << "\n\n"
+          << trans(baoab.p)
           << std::endl;
 
       results << t << " " << average.value() << std::endl;

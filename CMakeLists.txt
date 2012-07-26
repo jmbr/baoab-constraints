@@ -10,21 +10,20 @@ find_package(OpenMP)
 find_package(GSL REQUIRED)
 include_directories(${GSL_INCLUDE_DIRS})
 
+find_package(Armadillo REQUIRED)
+include_directories(${ARMADILLO_INCLUDE_DIRS})
+
 find_package(Gnuplot)
 add_definitions(-DGNUPLOT_EXECUTABLE="${GNUPLOT_EXECUTABLE}")
-
-find_package(Armadillo)
-include_directories(${ARMADILLO_INCLUDE_DIRS})
 
 set(CXX_WARN_FLAGS "-W -Wall -Wextra -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal")
 set(CMAKE_CXX_FLAGS_DEBUG "-O2")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -funroll-loops -march=native")
 set(CMAKE_CXX_FLAGS "-ggdb3 ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-add_library(baoab STATIC
+add_library(baoab SHARED
   BAOAB.h BAOAB.cpp
   Plotter.h Plotter.cpp
-  # Histogram.h Histogram.cpp
   linspace.h
   Experiment.h Experiment.cpp
   Average.h Average.cpp)
