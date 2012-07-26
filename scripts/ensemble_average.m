@@ -16,8 +16,7 @@ r0 = sqrt(2.0);
 U = @(theta, phi) d * (1 - exp(-a * (r(theta, phi) - r0))).^2;
 
 % The denominator function comes directly from Maple.
-% denominator = @(theta, phi) sqrt(cos(phi).^2-2.*cos(phi).^2.*cos(theta).^2+3+cos(theta).^2-2.*sin(theta).*sin(phi).*cos(theta).*cos(phi));
-denominator = @(theta, phi) 1
+denominator = @(theta, phi) sqrt(cos(phi).^2-2.*cos(phi).^2.*cos(theta).^2+3+cos(theta).^2-2.*sin(theta).*sin(phi).*cos(theta).*cos(phi));
 
 boltzmann_factor = @(theta, phi) exp(-beta .* U(theta, phi)) ./ denominator(theta, phi);
 
