@@ -38,6 +38,17 @@ target_link_libraries(simul baoab ${GSL_LIBRARIES} ${ARMADILLO_LIBRARIES})
 add_executable(integration-montecarlo integration-montecarlo.cpp integrands.c)
 target_link_libraries(integration-montecarlo ${GSL_LIBRARIES})
 
-add_executable(integration-cubature integration-cubature.cpp integrands.c
-  ${PROJECT_SOURCE_DIR}/contrib/cubature/cubature.c)
-target_link_libraries(integration-cubature -lm)
+# add_executable(integration-cubature integration-cubature.cpp integrands.c
+#   ${PROJECT_SOURCE_DIR}/contrib/cubature/cubature.c)
+# target_link_libraries(integration-cubature -lm)
+
+find_path(LIBNAGC_INCLUDE_DIRS nag.h HINTS /opt/NAG/cll6i09dcl/include)
+find_library(LIBNAGC_LIBRARIES nagc NAMES nagc_nag HINTS /opt/NAG/cll6i09dcl/lib)
+include_directories(${LIBNAGC_INCLUDE_DIRS})
+add_definitions(-D_GNU_SOURCE)
+
+add_executable(nag-int nag-int.cpp integrands.c ${LIBNAGC_INCLUDE_DIRS})
+target_link_libraries(nag-int ${LIBNAGC_LIBRARIES})
+
+add_executable(nag-mc nag-mc.cpp integrands.c ${LIBNAGC_INCLUDE_DIRS})
+target_link_libraries(nag-mc ${LIBNAGC_LIBRARIES})
