@@ -81,8 +81,10 @@ void BAOAB::project(const Vector& q, Vector& v) {
   // at the point q.
 
   const mat::fixed<nconstraints, 2 * nparticles> Gq = G(q);
+  const auto GqT = trans(Gq);
+  const mat::fixed<nconstraints, nconstraints> inv_GGT = inv(symmatu(Gq * GqT));
 
-  v = (id - trans(Gq) * inv(Gq * trans(Gq)) * Gq) * v;
+  v -= GqT * inv_GGT * Gq * v;
 }
 
 void BAOAB::B() {

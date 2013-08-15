@@ -36,7 +36,7 @@ class Experiment {
   Average potential;
   unsigned long equilibration_steps;
   unsigned long long production_steps;
-  bool plot;
+  const bool plot;
   Plotter plt;
 
  private:
