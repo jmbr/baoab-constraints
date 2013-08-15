@@ -11,12 +11,6 @@
 #include "Plotter.h"
 #include "Experiment.h"
 
-
-Experiment::Experiment()
-    : equilibration_steps(0UL),
-      production_steps(0ULL),
-      plot(false) {}
-
 Experiment::Experiment(double friction,
                        double temperature,
                        double dt_,
@@ -34,19 +28,6 @@ Experiment::Experiment(double friction,
 Experiment::~Experiment() {
   if (files_are_open)
     closeFiles();
-}
-
-Experiment& Experiment::operator=(const Experiment& other) {
-  if (this != &other) {
-    baoab = other.baoab;
-    end_to_end = other.end_to_end;
-    potential = other.potential;
-    equilibration_steps = other.equilibration_steps;
-    production_steps = other.production_steps;
-    plot = other.plot;
-  }
-
-  return *this;
 }
 
 void Experiment::openFiles() {

@@ -50,10 +50,6 @@ class BAOAB {
         double dt,
         unsigned long seed);
 
-  ~BAOAB();
-
-  BAOAB& operator=(const BAOAB& other);
-
   void advance();
 
   void center();

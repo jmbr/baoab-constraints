@@ -11,8 +11,6 @@ class Plotter;
 
 class Experiment {
  public:
-  Experiment();
-
   Experiment(double friction,
              double temperature,
              double dt,
@@ -21,11 +19,7 @@ class Experiment {
              unsigned long random_seed,
              bool plot = false);
 
-  Experiment(const Experiment& e);
-
   ~Experiment();
-
-  Experiment& operator=(const Experiment& other);
 
   void openFiles();
   void closeFiles();

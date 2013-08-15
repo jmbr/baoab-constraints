@@ -31,26 +31,6 @@ BAOAB::BAOAB(double friction_, double temperature_,
   f = force(q, &pot);
 }
 
-BAOAB::~BAOAB() {
-  gsl_rng_free(rng);
-}
-
-BAOAB& BAOAB::operator=(const BAOAB& other) {
-  if (this != &other) {
-    q = other.q;
-    p = other.p;
-    friction = other.friction;
-    temperature = other.temperature;
-    dt = other.dt;
-    c1 = exp(-friction * dt);
-    c3 = sqrt(temperature * (1.0 - c1 * c1));
-    f = other.f;
-    gsl_rng_memcpy(rng, other.rng);
-  }
-
-  return *this;
-}
-
 vec::fixed<nconstraints> BAOAB::g(const Vector& r) {
   vec::fixed<nconstraints> v;
 
