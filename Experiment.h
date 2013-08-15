@@ -36,6 +36,7 @@ class Experiment {
   void advance();
 
  public:
+  unsigned long random_seed;
   BAOAB baoab;
   Average end_to_end;
   Average potential;
@@ -43,7 +44,6 @@ class Experiment {
   unsigned long long production_steps;
   bool plot;
   Plotter plt;
-  unsigned long random_seed;
 
  private:
   bool files_are_open;

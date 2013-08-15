@@ -9,9 +9,6 @@ include_directories(${PROJECT_SOURCE_DIR}/contrib/cubature)
 
 find_package(OpenMP)
 
-find_package(GSL REQUIRED)
-include_directories(${GSL_INCLUDE_DIRS})
-
 find_package(Gnuplot)
 add_definitions(-DGNUPLOT_EXECUTABLE="${GNUPLOT_EXECUTABLE}" -D_GNU_SOURCE)
 
@@ -20,35 +17,10 @@ include_directories(${ARMADILLO_INCLUDE_DIRS})
 
 set(CXX_WARN_FLAGS "-W -Wall -Wextra -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -funroll-loops -march=native")
-set(CMAKE_CXX_FLAGS "-ggdb3 ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -funroll-loops -flto")
+set(CMAKE_CXX_FLAGS "-g ${CXX_WARN_FLAGS} ${OpenMP_CXX_FLAGS} -std=c++11")
 
-add_library(baoab STATIC
-  BAOAB.h BAOAB.cpp
-  Plotter.h Plotter.cpp
-  linspace.h
-  Experiment.h Experiment.cpp
-  Average.h Average.cpp
-  Force.h Force.cpp
-  )
+add_library(baoab BAOAB.h BAOAB.cpp Plotter.h Plotter.cpp linspace.h Experiment.h Experiment.cpp Average.h Average.cpp Force.h Force.cpp)
 
 add_executable(simul simul.cpp Options.cpp)
-target_link_libraries(simul baoab ${GSL_LIBRARIES} ${ARMADILLO_LIBRARIES})
-
-add_executable(integration-montecarlo integration-montecarlo.cpp integrands.c)
-target_link_libraries(integration-montecarlo ${GSL_LIBRARIES})
-
-# add_executable(integration-cubature integration-cubature.cpp integrands.c
-#   ${PROJECT_SOURCE_DIR}/contrib/cubature/cubature.c)
-# target_link_libraries(integration-cubature -lm)
-
-find_path(LIBNAGC_INCLUDE_DIRS nag.h HINTS /opt/NAG/cll6i09dcl/include)
-find_library(LIBNAGC_LIBRARIES nagc NAMES nagc_nag HINTS /opt/NAG/cll6i09dcl/lib)
-include_directories(${LIBNAGC_INCLUDE_DIRS})
-add_definitions(-D_GNU_SOURCE)
-
-add_executable(nag-int nag-int.cpp integrands.c ${LIBNAGC_INCLUDE_DIRS})
-target_link_libraries(nag-int ${LIBNAGC_LIBRARIES})
-
-add_executable(nag-mc nag-mc.cpp integrands.c ${LIBNAGC_INCLUDE_DIRS})
-target_link_libraries(nag-mc ${LIBNAGC_LIBRARIES})
+target_link_libraries(simul baoab ${ARMADILLO_LIBRARIES})

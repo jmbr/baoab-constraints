@@ -24,11 +24,11 @@ Experiment::Experiment(double friction,
                        double production_time,
                        unsigned long random_seed_,
                        bool plot_)
-    : baoab(friction, temperature, dt_, random_seed),
+    : random_seed(random_seed_),
+      baoab(friction, temperature, dt_, random_seed),
       equilibration_steps(long(ceil(equilibration_time / dt_))),
       production_steps(long(ceil(production_time / dt_))),
       plot(plot_),
-      random_seed(random_seed_),
       files_are_open(false) {}
 
 Experiment::~Experiment() {

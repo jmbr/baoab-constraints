@@ -3,8 +3,7 @@
 
 #include <iostream>
 #include <exception>
-
-#include <gsl/gsl_rng.h>
+#include <random>
 
 #include <armadillo>
 
@@ -38,7 +37,9 @@ class BAOAB {
   Vector f;
   double pot;
 
-  gsl_rng* rng;
+  unsigned long random_seed;
+  std::mt19937 rng;
+  std::normal_distribution<double> gaussian;
 
  public:
   BAOAB() {}

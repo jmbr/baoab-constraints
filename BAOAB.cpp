@@ -3,8 +3,6 @@
 #include <iostream>
 #include <sstream>
 
-#include <gsl/gsl_randist.h>
-
 #include "BAOAB.h"
 #include "Plotter.h"
 #include "abort_unless.h"
@@ -18,10 +16,9 @@ BAOAB::BAOAB(double friction_, double temperature_,
       temperature(temperature_),
       dt(dt_),
       c1(exp(-friction * dt)),
-      c3(sqrt(temperature * (1.0 - c1 * c1))) {
-  rng = gsl_rng_alloc(gsl_rng_mt19937);
-  gsl_rng_set(rng, seed);
-
+      c3(sqrt(temperature * (1.0 - c1 * c1))),
+      random_seed(seed),
+      rng(random_seed) {
   // Set up initial conditions (must satisfy the constraints).
   q.zeros();
   p.zeros();
