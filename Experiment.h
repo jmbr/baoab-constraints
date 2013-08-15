@@ -36,7 +36,7 @@ class Experiment {
   void advance();
 
  public:
-  unsigned long random_seed;
+  const unsigned long random_seed;
   BAOAB baoab;
   Average end_to_end;
   Average potential;

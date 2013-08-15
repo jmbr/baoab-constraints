@@ -113,9 +113,8 @@ void BAOAB::B() {
 }
 
 void BAOAB::O() {
-  Vector R;
-  for (vec::iterator r = R.begin(); r != R.end(); ++r)
-    *r = gsl_ran_gaussian(rng, 1.0);
+  for (uint k = 0; k < R.size(); ++k)
+    R[k] = gaussian(rng);
 
   project(q, R);
   p = c1 * p + c3 * R;

@@ -26,6 +26,7 @@ class BAOAB_did_not_converge : public std::exception {
 class BAOAB {
  public:
   Vector q, p;
+  Vector R;
   double friction;
   double temperature;
   double dt;
