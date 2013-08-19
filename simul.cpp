@@ -8,6 +8,7 @@
 #include "BAOAB.h"
 #include "Average.h"
 #include "Plotter.h"
+#include "Histogram.h"
 #include "Experiment.h"
 #include "linspace.h"
 

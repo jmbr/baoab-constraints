@@ -8,6 +8,7 @@
 class BAOAB;
 class Average;
 class Plotter;
+class Histogram;
 
 class Experiment {
  public:
@@ -28,6 +29,7 @@ class Experiment {
 
  private:
   void advance();
+  bool should_update(size_t step) const;
 
  public:
   const unsigned long random_seed;
@@ -38,11 +40,13 @@ class Experiment {
   unsigned long long production_steps;
   const bool plot;
   Plotter plt;
+  Histogram histogram;
 
  private:
   bool files_are_open;
   std::ofstream log;
   std::ofstream results;
+  const size_t update_interval;
 };
 
 #endif

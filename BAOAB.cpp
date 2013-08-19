@@ -22,8 +22,10 @@ BAOAB::BAOAB(double friction_, double temperature_,
   // Set up initial conditions (must satisfy the constraints).
   q.zeros();
   p.zeros();
-  for (unsigned k = 0; k < nparticles; k++)
-    q(2*k) = double(k);
+  q(0) =  0.0;
+  q(1) = -1.0;
+  p(0) = -1.0;
+  p(1) =  0.0;
 
   abort_unless(norm(g(q), "inf") < tol
                && norm(G(q) * p, "inf") < tol);
@@ -33,17 +35,7 @@ BAOAB::BAOAB(double friction_, double temperature_,
 
 vec::fixed<nconstraints> BAOAB::g(const Vector& r) {
   vec::fixed<nconstraints> v;
-
-  for (unsigned i = 0; i < nconstraints; i++) {
-    const unsigned j = i + 1;
-
-    vec::fixed<2> u;
-    u(0) = r(2*i+0) - r(2*j+0);
-    u(1) = r(2*i+1) - r(2*j+1);
-
-    v(i) = (dot(u, u) - 1.0) / 2.0;
-  }
-
+  v(0) = K * r(0) * r(0) + r(1) * r(1) - 1.0;
   return v;
 }
 
@@ -51,18 +43,8 @@ mat::fixed<nconstraints, 2 * nparticles> BAOAB::G(const Vector& r) {
   mat::fixed<nconstraints, 2 * nparticles> m;
   m.zeros();
 
-  for (unsigned i = 0; i < nconstraints; i++) {
-    const unsigned j = i + 1;
-
-    vec::fixed<2> u;
-    u(0) = r(2*i+0) - r(2*j+0);
-    u(1) = r(2*i+1) - r(2*j+1);
-
-    m(i, 2*i+0) =  u(0);
-    m(i, 2*i+1) =  u(1);
-    m(i, 2*i+2) = -u(0);
-    m(i, 2*i+3) = -u(1);
-  }
+  m(0) = 2.0 * K * r(0);
+  m(1) = 2.0 * r(1);
 
   return m;
 }
@@ -150,6 +132,7 @@ void BAOAB::rattle(double h, unsigned max_iters) {
 }
 
 void BAOAB::plot(Plotter& plotter) {
+  /*
   const double I = 5.0;
   std::ostringstream cmd;
   cmd << "unset key\n"
@@ -163,11 +146,21 @@ void BAOAB::plot(Plotter& plotter) {
   for (unsigned k = 0; k < nparticles; k++)
     cmd << q(2 * k) << " " << q(2 * k + 1) << "\n";
   cmd << "e\n";
-
+  */
+    std::ostringstream cmd;
+  cmd << "unset key\n"
+      << "set title 'Potential = " << pot << "'\n"
+      << "set xrange [-2:2]\n"
+      << "set yrange [-2:2]\n"
+      << "set size square\n"
+      << "plot '-' with linespoints "
+      << "pointtype 7 pointsize 3 linewidth 2\n";
+  cmd << q(0) << " " << q(1) << "\ne\n";
   plotter.send(cmd.str());
 }
 
 double BAOAB::end_to_end_distance() const {
+  /*
   const unsigned i = 0, j = nparticles - 1;
 
   vec::fixed<2> v;
@@ -175,13 +168,20 @@ double BAOAB::end_to_end_distance() const {
   v(1) = q(2*i+1) - q(2*j+1);
 
   return norm(v, 2);
+  */
+  return 0.0;
 }
 
 double BAOAB::potential() const {
   return pot;
 }
 
+double BAOAB::angle() const {
+  return atan2(q(1), sqrt(K) * q(0));
+}
+
 void BAOAB::center() {
+  /*
   vec::fixed<2> c = zeros<vec>(2);
 
   unsigned k;
@@ -196,4 +196,5 @@ void BAOAB::center() {
     q(2*k+0) -= c(0);
     q(2*k+1) -= c(1);
   }
+  */
 }

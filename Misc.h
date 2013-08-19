@@ -5,8 +5,10 @@
 
 using namespace arma;
 
-const unsigned nparticles = 7;                // # of particles
-const unsigned nconstraints = nparticles - 1; // # of constraints
+const double K = 0.05;
+
+const unsigned nparticles = 1;                // # of particles
+const unsigned nconstraints = 1;              // # of constraints
 
 typedef vec::fixed<2 * nparticles> Vector;
 

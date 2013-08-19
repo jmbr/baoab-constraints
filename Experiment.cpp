@@ -9,6 +9,7 @@
 #include "BAOAB.h"
 #include "Average.h"
 #include "Plotter.h"
+#include "Histogram.h"
 #include "Experiment.h"
 
 Experiment::Experiment(double friction,
@@ -23,7 +24,10 @@ Experiment::Experiment(double friction,
       equilibration_steps(long(ceil(equilibration_time / dt_))),
       production_steps(long(ceil(production_time / dt_))),
       plot(plot_),
-      files_are_open(false) {}
+      histogram(40, temperature, K),
+      files_are_open(false),
+      update_interval(1e5) {
+}
 
 Experiment::~Experiment() {
   if (files_are_open)
@@ -79,9 +83,13 @@ void Experiment::closeFiles() {
   files_are_open = false;
 }
 
-void Experiment::simulate() {
-  size_t update_interval = size_t(1e5);
+bool Experiment::should_update(size_t step) const {
+  return step == 1
+      || step % update_interval == 0
+      || step == production_steps;
+}
 
+void Experiment::simulate() {
   // Equilibrate
   for (size_t step = 1; step <= equilibration_steps; step++) {
     if (step % update_interval == 0) {
@@ -98,17 +106,18 @@ void Experiment::simulate() {
   log << "Running production simulation." << std::endl;
   for (size_t step = 1; step <= production_steps; step++) {
     baoab.advance();
+    ++histogram[baoab.angle()];
 
     // Collect ensemble averages.
-    end_to_end.update(baoab.end_to_end_distance());
     potential.update(baoab.potential());
+    // end_to_end.update(baoab.end_to_end_distance());
 
-    if (step % update_interval == 0
-        || step == 1 || step == production_steps) {
-      baoab.center();
+    if (should_update(step)) {
+      baoab.center(); // XXX Make sure this is not messing up the averages.
 
       if (plot)
-        baoab.plot(plt);
+        histogram.plot(plt);
+        // baoab.plot(plt);
 
       const double t = double(step) * baoab.dt;
 
@@ -117,8 +126,9 @@ void Experiment::simulate() {
           << std::endl;
 
       results << t << " "
-              << end_to_end.value() << " "
-              << potential.value()
+              // << end_to_end.value() << " "
+              << potential.value() << " "
+              << histogram.error()
               << std::endl;
     }
   }

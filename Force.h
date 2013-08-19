@@ -12,8 +12,6 @@ class Force {
  private:
   double pot;
   Vector force;
-  
-  void compute_force_morse(const Vector& q, unsigned i, unsigned j);
 };
 
 #endif

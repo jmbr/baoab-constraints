@@ -55,8 +55,8 @@ class BAOAB {
   void center();
 
   double end_to_end_distance() const;
-
   double potential() const;
+  double angle() const;
 
   void plot(Plotter& plotter);
 
